@@ -1,10 +1,10 @@
 AccessModifierOffset: -2
 AlignAfterOpenBracket: BlockIndent
-AlignOperands:   AlignAfterOperator
+AlignOperands: AlignAfterOperator
 AllowShortBlocksOnASingleLine: Always
 AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLoopsOnASingleLine: true
-ColumnLimit:     154
+ColumnLimit: 150
 EmptyLineBeforeAccessModifier: Always
 NamespaceIndentation: Inner
 PackConstructorInitializers: CurrentLine
