@@ -1,0 +1,11 @@
+AccessModifierOffset: -2
+AlignAfterOpenBracket: BlockIndent
+AlignOperands:   AlignAfterOperator
+AllowShortBlocksOnASingleLine: Always
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: true
+ColumnLimit:     154
+EmptyLineBeforeAccessModifier: Always
+NamespaceIndentation: Inner
+PackConstructorInitializers: CurrentLine
+SpaceBeforeCpp11BracedList: true

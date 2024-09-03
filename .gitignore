@@ -1,0 +1,5 @@
+build/
+out/
+.cache/
+/make
+/compile_commands.json
