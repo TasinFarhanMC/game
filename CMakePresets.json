@@ -8,9 +8,11 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "OFF",
         "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/out",
         "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/out",
         "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/out",
+        "OPENGL_BUILD_TESTS": "OFF",
         "GLFW_BUILD_EXAMPLES": "OFF",
         "GLFW_BUILD_TESTS": "OFF",
         "GLFW_BUILD_DOCS": "OFF",
@@ -24,9 +26,15 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/out",
         "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/out",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/out"
+        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/out",
+        "OPENGL_BUILD_TESTS": "ON",
+        "GLFW_BUILD_EXAMPLES": "OFF",
+        "GLFW_BUILD_TESTS": "ON",
+        "GLFW_BUILD_DOCS": "ON",
+        "GLFW_INSTALL": "OFF"
       }
     }
   ],
