@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
@@ -19,15 +19,15 @@ jobs:
       - name: Setup CMake & Ninja
         uses: lukka/get-cmake@latest
 
-      - name: Install dependencies
-        run: sudo apt-get install -y libglfw3-dev wayland-protocols wayland-bin libwayland-dev
+        #- name: Install dependencies
+        #run: sudo apt-get install -y libglfw3-dev wayland-protocols wayland libwayland-dev
 
       - name: Configure CMake
-        run: cmake -B ${{github.workspace}}/build --preset=debug
+        run: cmake -B ${{github.workspace}}\build --preset=debug
 
       - name: Build
-        run: cmake --build ${{github.workspace}}/build --preset=debug
+        run: cmake --build ${{github.workspace}}\build --preset=debug
 
       - name: Test
-        working-directory: ${{github.workspace}}/build
+        working-directory: ${{github.workspace}}\build
         run: ctest -V
