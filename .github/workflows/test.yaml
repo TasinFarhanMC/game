@@ -13,11 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout
+      - uses: actions/checkout@main
         with:
           submodules: true
-      - uses: jwlawson/actions-setup-cmake
-      - uses: turtlesec-no/get-ninja
+      - uses: lukka/get-cmake@latest
 
       - name: Configure CMake
         run: cmake -B ${{github.workspace}}/build --preset=debug
