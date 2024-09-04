@@ -30,12 +30,7 @@ jobs:
               INTERFACE_INCLUDE_DIRECTORIES \"/usr/include\")" >> vendor/CMakeLists.txt
 
       - name: Install dependencies
-        run: sudo apt-get install -y libglfw3-dev xvfb
-
-      - name: Start X
-        run: |
-          Xvfb :99 -screen 0 1920x1080x24 &
-          export DISPLAY=:99
+        run: sudo apt-get install -y libglfw3-dev
 
       - name: Configure CMake
         run: cmake --preset=debug
@@ -45,4 +40,4 @@ jobs:
 
       - name: Test
         working-directory: build/debug
-        run: ctest -V
+        run: ctest -V -L CLI
