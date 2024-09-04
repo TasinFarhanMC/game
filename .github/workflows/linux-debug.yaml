@@ -1,0 +1,43 @@
+name: Linux Debug Build & Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request: 
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+        with:
+          submodules: true
+
+      - name: Setup CMake & Ninja
+        uses: lukka/get-cmake@latest
+
+      - name: Remove GLFW Build
+        run: sed -i '1d' vendor/CMakeLists.txt
+
+      - name: Add GLFW pkg
+        run: |
+          echo "add_library(glfw SHARED IMPORTED)
+          set_target_properties(glfw PROPERTIES
+              IMPORTED_LOCATION \"/usr/lib/x86_64-linux-gnu/libglfw.so\"
+              INTERFACE_INCLUDE_DIRECTORIES \"/usr/include\")" >> vendor/CMakeLists.txt
+
+      - name: Install dependencies
+        run: sudo apt-get install -y libglfw3-dev
+
+      - name: Configure CMake
+        run: cmake --preset=debug
+
+      - name: Build
+        run: cmake --build --preset=debug
+
+      - name: Test
+        working-directory: build/debug
+        run: ctest -V

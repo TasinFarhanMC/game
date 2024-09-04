@@ -1,19 +1,17 @@
 #pragma once
 
-#include <string.hpp>
 #include <glad/gl.h>
 #include <io.hpp>
+#include <string.hpp>
 #include <vector.hpp>
 
 class ShaderParser {
-  IFStream file_stream;
+public:
   struct Data {
     String source;
     GLuint type;
   };
-  Vector<Data> data;
 
-public:
   ShaderParser(ShaderParser &&) = delete;
   ShaderParser(const ShaderParser &) = delete;
   ShaderParser &operator=(ShaderParser &&) = delete;
@@ -24,6 +22,10 @@ public:
 
   ShaderParser(IFStream &&file_stream) : file_stream(std::move(file_stream)) {};
   ShaderParser(const String &file_name) : file_stream(file_name) {};
+
+private:
+  Vector<Data> data;
+  IFStream file_stream;
 };
 
 class Shader {
@@ -40,7 +42,10 @@ public:
 
   GLuint get_id() const noexcept { return id; }
   [[nodiscard]] bool compile();
-  ~Shader();
+
+  ~Shader() {
+    if (id) { glDeleteShader(id); }
+  };
 
   explicit Shader(const String name, const String source, const GLuint type) : name(std::move(name)), source(std::move(source)), type(type), id(0) {};
 };
@@ -58,7 +63,10 @@ public:
 
   GLuint get_id() const noexcept { return id; }
   [[nodiscard]] bool compile();
-  ~ShaderProgram();
+
+  ~ShaderProgram() {
+    if (id) { glDeleteProgram(id); }
+  };
 
   explicit ShaderProgram(Vector<Shader> shaders) : shaders(std::move(shaders)), id(0) {}
 };
