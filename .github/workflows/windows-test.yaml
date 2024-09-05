@@ -19,14 +19,14 @@ jobs:
       - name: Setup CMake & Ninja
         uses: lukka/get-cmake@latest
 
-      - name: Setup Mesa Drivers
+      - name: Setup OpenGL Drivers
         uses: ssciwr/setup-mesa-dist-win@v2
 
       - name: Configure CMake
         run: cmake --preset=test
 
       - name: Build
-        run: cmake --build --preset=debug
+        run: cmake --build --preset=debug -- /maxcpucount
 
       - name: Test
         working-directory: build/debug
