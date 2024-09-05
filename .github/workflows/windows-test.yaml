@@ -27,4 +27,4 @@ jobs:
 
       - name: Test
         working-directory: build/debug
-        run: ctest -V -L cli
+        run: ctest -V
