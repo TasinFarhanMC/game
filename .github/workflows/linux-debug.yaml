@@ -39,7 +39,7 @@ jobs:
         run: cmake --preset=test
 
       - name: Build
-        run: cmake --build --preset=debug -j$(nproc)
+        run: cmake --build --preset=debug -j$(expr $(nproc) \* 3 \/ 2)
 
       - name: Test
         working-directory: build/debug
