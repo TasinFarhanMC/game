@@ -1,7 +1,7 @@
 #include "shader.hpp"
 #include <iostream>
 
-bool ShaderParser::parse() {};
+bool ShaderParser::parse() { return true;};
 
 void Shader::compile() {
   id = glCreateShader(type);
