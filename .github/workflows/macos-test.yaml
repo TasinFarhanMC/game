@@ -16,20 +16,20 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup CMake & Ninja
-        uses: lukka/get-cmake@latest
-
       - name: Setup X11 Drivers
         uses: tecolicom/actions-use-homebrew-tools@v1
         with:
           tools: xquartz
           verbose: yes
 
+      - name: Setup CMake & Ninja
+        uses: lukka/get-cmake@latest
+
       - name: Configure CMake
-        run: cmake --preset=test
+        run: cmake --preset=test -D GLFW_BUILD_COCOA=OFF
 
       - name: Build
-        run: cmake --build --preset=debug -j$(sysctl -n hw.ncpu)
+        run: cmake --build --preset=debug -j $(sysctl -n hw.ncpu)
 
       - name: Test
         working-directory: build/debug
