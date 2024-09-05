@@ -1,0 +1,30 @@
+name: Windows Debug Build & Tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+        with:
+          submodules: true
+
+      - name: Setup CMake & Ninja
+        uses: lukka/get-cmake@latest
+
+      - name: Configure CMake
+        run: cmake --preset=test
+
+      - name: Build
+        run: cmake --build --preset=debug
+
+      - name: Test
+        working-directory: build/debug
+        run: ctest -V -L CLI
