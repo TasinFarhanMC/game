@@ -12,12 +12,17 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
         with:
           submodules: true
 
       - name: Setup CMake & Ninja
         uses: lukka/get-cmake@latest
+
+      - name: Install Mesa Windows
+        uses: f3d-app/install-mesa-windows-action@v1
+        with:
+          path: ${{github.workspace}}/out
 
       - name: Configure CMake
         run: cmake --preset=test
