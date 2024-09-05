@@ -27,24 +27,8 @@ int main() {
 
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1); // Enable vsync
-
-  // Initialize OpenGL loader
-#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-  if (gl3wInit() != 0) {
-    fprintf(stderr, "Failed to initialize OpenGL loader!\n");
-    return -1;
-  }
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-  if (glewInit() != GLEW_OK) {
-    fprintf(stderr, "Failed to initialize GLEW!\n");
-    return -1;
-  }
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-  if (!gladLoadGL((GLADloadfunc)glfwGetProcAddress)) {
-    fprintf(stderr, "Failed to initialize GLAD!\n");
-    return -1;
-  }
-#endif
+  
+  gladLoadGL((GLADloadfunc)glfwGetProcAddress);
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
