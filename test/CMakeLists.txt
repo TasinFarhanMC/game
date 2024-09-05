@@ -4,14 +4,14 @@ file(GLOB_RECURSE TESTS "*.cpp")
 
 foreach(TEST_FILE ${TESTS})
   get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
-  string(CONCAT TEST_NAME "opengl_" ${TEST_NAME})
+  string(CONCAT TEST_NAME "gldl_" ${TEST_NAME})
   string(TOUPPER "${TEST_NAME}" CTEST_NAME)
 
   add_executable(${TEST_NAME} ${TEST_FILE})
-  target_link_libraries(${TEST_NAME} PRIVATE glfw glad imgui glm stb_image)
+  target_link_libraries(${TEST_NAME} PRIVATE gldl)
   add_test(NAME ${CTEST_NAME} COMMAND ${TEST_NAME})
 
-  if(${TEST_NAME} MATCHES "^opengl_gui_")
+  if(${TEST_NAME} MATCHES "^gldl_gui_")
     set(TEST_LABEL "GUI")
   else()
     set(TEST_LABEL "CLI")

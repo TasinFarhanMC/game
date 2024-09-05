@@ -1,7 +1,7 @@
 #pragma once
 
+#include <fstream.hpp>
 #include <glad/gl.h>
-#include <io.hpp>
 #include <string.hpp>
 #include <vector.hpp>
 
@@ -37,17 +37,39 @@ public:
   Shader &operator=(Shader &&) = delete;
   Shader &operator=(const Shader &) = delete;
 
-  const String name, source;
+  const char *name;
+  const char *source;
+  const char *type_name;
   const GLuint type;
 
+  void compile();
   GLuint get_id() const noexcept { return id; }
-  [[nodiscard]] bool compile();
 
   ~Shader() {
     if (id) { glDeleteShader(id); }
   };
 
-  explicit Shader(const String name, const String source, const GLuint type) : name(std::move(name)), source(std::move(source)), type(type), id(0) {};
+  explicit Shader(const String name, const String source, const GLuint type, const bool compile = false)
+      : name(std::move(name.c_str())),
+        source(std::move(source.c_str())),
+        type_name(get_type_name(type)),
+        type(type),
+        id(0) {
+    if (compile) { this->compile(); }
+  };
+
+  static const char *const get_type_name(GLint type) {
+    switch (type) {
+    case GL_VERTEX_SHADER:
+      return "Vertex";
+    case GL_FRAGMENT_SHADER:
+      return "Fragment";
+    case GL_GEOMETRY_SHADER:
+      return "Geometry";
+    default:
+      return "Unknown";
+    }
+  }
 };
 
 class ShaderProgram {
@@ -62,7 +84,7 @@ public:
   ShaderProgram &operator=(const ShaderProgram &) = delete;
 
   GLuint get_id() const noexcept { return id; }
-  [[nodiscard]] bool compile();
+  void compile();
 
   ~ShaderProgram() {
     if (id) { glDeleteProgram(id); }

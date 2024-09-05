@@ -2,9 +2,9 @@ name: Linux Debug Build & Tests
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request: 
-    branches: [ main, master ]
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
 
 jobs:
   build:
@@ -30,14 +30,17 @@ jobs:
               INTERFACE_INCLUDE_DIRECTORIES \"/usr/include\")" >> vendor/CMakeLists.txt
 
       - name: Install dependencies
-        run: sudo apt-get install -y libglfw3-dev
+        run: sudo apt-get install -y libglfw3-dev xvfb
+
+      - name: Add Virtual Display
+        run: "Xvfb :99 -screen 0 1920x1080x24 &"
 
       - name: Configure CMake
-        run: cmake --preset=debug
+        run: cmake --preset=test
 
       - name: Build
-        run: cmake --build --preset=debug
+        run: cmake --build --preset=debug -j$(nproc)
 
       - name: Test
         working-directory: build/debug
-        run: ctest -V -L CLI
+        run: "DISPLAY=:99 ctest -V -L CLI"

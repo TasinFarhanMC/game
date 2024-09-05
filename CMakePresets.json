@@ -3,38 +3,39 @@
   "configurePresets": [
     {
       "name": "default",
-      "hidden": false,
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/${presetName}",
+      "description": "Default build",
+      "binaryDir": "${sourceDir}/build/default",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "OFF",
         "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/out",
         "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/out",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/out",
-        "OPENGL_BUILD_TESTS": "OFF",
-        "GLFW_BUILD_EXAMPLES": "OFF",
-        "GLFW_BUILD_TESTS": "OFF",
-        "GLFW_BUILD_DOCS": "OFF",
-        "GLFW_INSTALL": "OFF"
+        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/out"
+      }
+    },
+    {
+      "name": "release",
+      "description": "Release build",
+      "binaryDir": "${sourceDir}/build/release",
+      "inherits": "default",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
       "name": "debug",
-      "hidden": false,
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/${presetName}",
+      "description": "Debug build",
+      "binaryDir": "${sourceDir}/build/debug",
+      "inherits": "default",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/out",
-        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/out",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/out",
-        "OPENGL_BUILD_TESTS": "ON",
-        "GLFW_BUILD_EXAMPLES": "OFF",
-        "GLFW_BUILD_TESTS": "ON",
-        "GLFW_BUILD_DOCS": "ON",
-        "GLFW_INSTALL": "OFF"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "test",
+      "description": "Test build",
+      "inherits": "debug",
+      "cacheVariables": {
+        "GLDL_BUILD_TESTS": "ON"
       }
     }
   ],
@@ -42,15 +43,12 @@
     {
       "name": "release",
       "hidden": false,
-      "configurePreset": "default",
-      "jobs": 6
+      "configurePreset": "default"
     },
     {
       "name": "debug",
       "hidden": false,
-      "configurePreset": "debug",
-      "jobs": 6
+      "configurePreset": "debug"
     }
   ]
 }
-

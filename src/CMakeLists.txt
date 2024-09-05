@@ -1,3 +1,6 @@
-add_library(opengl STATIC "window.cpp")
-target_include_directories(opengl PUBLIC ".")
-target_link_libraries(opengl PUBLIC glfw glad glm stb_image)
+add_library(gldl STATIC "shader.cpp")
+target_include_directories(
+  gldl
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+  PUBLIC "header")
+target_link_libraries(gldl PUBLIC glfw imgui glad glm stb_image)

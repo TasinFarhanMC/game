@@ -4,17 +4,7 @@
 #include "imgui.h"
 #include <GLFW/glfw3.h> // Include GLFW header
 #include <cstdio>
-#define IMGUI_IMPL_OPENGL_LOADER_GLAD
-
-#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-#include <GL/gl3w.h> // Initialize with gl3wInit()
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
-#include <GL/glew.h> // Initialize with glewInit()
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
 #include <glad/gl.h> // Initialize with gladLoadGL()
-#else
-#include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-#endif
 
 // Error callback for GLFW
 static void glfw_error_callback(int error, const char *description) { fprintf(stderr, "GLFW Error %d: %s\n", error, description); }
