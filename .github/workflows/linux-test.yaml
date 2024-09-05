@@ -2,9 +2,9 @@ name: Linux Debug Build & Tests
 
 on:
   push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
+    branches: [ main ]
+  pull_request: 
+    branches: [ main ]
 
 jobs:
   build:
@@ -35,4 +35,4 @@ jobs:
 
       - name: Test
         working-directory: build/debug
-        run: "DISPLAY=:99 ctest -V -L CLI"
+        run: "DISPLAY=:99 ctest --extra-verbose -C Debug -L CLI"

@@ -9,8 +9,7 @@
 // Error callback for GLFW
 static void glfw_error_callback(int error, const char *description) { fprintf(stderr, "GLFW Error %d: %s\n", error, description); }
 
-int main() { return 0; }
-int min() {
+int main() {
   // Set up GLFW error callback
   glfwSetErrorCallback(glfw_error_callback);
 
