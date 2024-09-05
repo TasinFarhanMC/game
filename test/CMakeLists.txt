@@ -7,8 +7,6 @@ foreach(TEST_FILE ${TESTS})
   string(CONCAT TEST_NAME "gldl_" ${TEST_NAME})
   string(TOUPPER "${TEST_NAME}" CTEST_NAME)
 
-  message(STATUS "Test Name: ${TEST_NAME}, CTest Name: ${CTEST_NAME}, Label: ${TEST_LABEL}")
-
   add_executable(${TEST_NAME} ${TEST_FILE})
   target_link_libraries(${TEST_NAME} PRIVATE gldl)
   add_test(NAME ${CTEST_NAME} COMMAND ${TEST_NAME})
@@ -18,6 +16,8 @@ foreach(TEST_FILE ${TESTS})
   else()
     set(TEST_LABEL "CLI")
   endif()
+
+  message(STATUS "Test Name: ${TEST_NAME}, CTest Name: ${CTEST_NAME}, Label: ${TEST_LABEL}")
 
   set_tests_properties(${CTEST_NAME} PROPERTIES LABELS ${TEST_LABEL})
 endforeach()
