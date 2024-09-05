@@ -16,23 +16,13 @@ jobs:
         with:
           submodules: true
 
-      - name: Cache APT packages
-        uses: actions/cache@v3
+      - name: Install APT packages
+        uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          path: |
-            /var/cache/apt/archives/*.deb
-            /var/lib/apt/lists
-          key: ${{ runner.os }}-apt-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-apt-
+          packages: libwayland-dev libxkbcommon-dev xorg-dev xvfb
 
       - name: Setup CMake & Ninja
         uses: lukka/get-cmake@latest
-
-      - name: Install APT packages
-        run: |
-          sudo apt update
-          sudo apt install -y libwayland-dev libxkbcommon-dev xorg-dev xvfb
 
       - name: Add Virtual Display
         run: "Xvfb :99 -screen 0 1920x1080x24 &"
