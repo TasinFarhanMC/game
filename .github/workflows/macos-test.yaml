@@ -19,8 +19,7 @@ jobs:
       - name: Setup X11 Drivers
         uses: tecolicom/actions-use-homebrew-tools@v1
         with:
-          tools: xquartz
-          verbose: yes
+          tools: xcode
 
       - name: Setup CMake & Ninja
         uses: lukka/get-cmake@latest
