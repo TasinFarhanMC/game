@@ -19,10 +19,8 @@ jobs:
       - name: Setup CMake & Ninja
         uses: lukka/get-cmake@latest
 
-      - name: Install Mesa Windows
-        uses: f3d-app/install-mesa-windows-action@v1
-        with:
-          path: ${{github.workspace}}/out
+      - name: Setup Mesa Drivers
+        uses: ssciwr/setup-mesa-dist-win@v2
 
       - name: Configure CMake
         run: cmake --preset=test
