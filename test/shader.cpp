@@ -10,6 +10,8 @@ static void glfw_error_callback(int error, const char *description) { std::cerr 
 int main() {
   glfwSetErrorCallback(glfw_error_callback);
 
+  std::cout << "Hello from test start" << std::endl;
+
   if (!glfwInit()) {
     std::cerr << "Unable to init glfw" << std::endl;
     return 1;
@@ -35,10 +37,10 @@ int main() {
     return 1;
   }
 
-  Shader uncompiled("Uncompiled", " ", GL_VERTEX_SHADER);
+  Shader uncompiled("Uncompiled", "adsdasd", GL_VERTEX_SHADER);
   uncompiled.compile();
 
-  Shader compiled("Compiled", " ", GL_VERTEX_SHADER, true);
+  Shader compiled("Compiled", "asdsad", GL_VERTEX_SHADER, true);
 
   glfwDestroyWindow(window);
   glfwTerminate();

@@ -1,9 +1,11 @@
 #include "shader.hpp"
 #include <iostream>
 
-bool ShaderParser::parse() { return true;};
+bool ShaderParser::parse() { return true; };
 
 void Shader::compile() {
+  std::cout << "Starting shader compilation..." << std::endl;
+
   id = glCreateShader(type);
   if (!id) {
     std::cerr << std::endl

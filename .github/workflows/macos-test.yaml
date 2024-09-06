@@ -31,7 +31,7 @@ jobs:
         run: cmake --build --preset=debug -j $(sysctl -n hw.ncpu)
 
       - name: Test
-        working-directory: ${{github.workspace}}/build/debug
+        working-directory: ${{github.workspace}}/out
         run: |
-          ctest -V -C Debug -L CLI
-          cat test/out.txt
+          ./gldl_shader
+          cat out.txt
