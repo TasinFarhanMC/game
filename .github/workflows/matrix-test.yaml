@@ -11,19 +11,13 @@ jobs:
     runs-on: "${{ matrix.os }}-latest"
     strategy:
       matrix:
-        os: [ ubuntu, macos, windows ]
-        compiler: [  msvc, mingw, clang ]
+        os: [ windows ]
+        compiler: [ msvc, mingw, clang ]
         include:
-          - os: windows
-            compiler: msvc
-          - os: windows
-            compiler: mingw
-          - os: windows
-            compiler: clang
-          - os: macos
-            compiler: [ ]
           - os: ubuntu
-            compiler: [ ]
+            compiler: ''
+          - os: macos
+            compiler: ''
 
     steps:
       - name: Checkout repository
