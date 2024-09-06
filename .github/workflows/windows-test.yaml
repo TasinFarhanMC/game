@@ -44,15 +44,15 @@ jobs:
         if: matrix.compiler == 'mingw'
         run: |
           cmake --preset=test \
-          -D CMAKE_C_COMPILER=${{setps.setup_mingw.outputs.gcc}} \
-          -D CMAKE_CXX_COMPILER=${{setps.setup_mingw.outputs.gxx}}
+          -D CMAKE_C_COMPILER=${{steps.setup_mingw.outputs.gcc}} \
+          -D CMAKE_CXX_COMPILER=${{steps.setup_mingw.outputs.gxx}}
 
       - name: Configure Clang CMake
         if: matrix.compiler == 'clang'
         run: |
           cmake --preset=test \
-          -D CMAKE_C_COMPILER=${{setps.setup_clang.outputs.clang}} \
-          -D CMAKE_CXX_COMPILER=${{setps.setup_clang.outputs.clangxx}}
+          -D CMAKE_C_COMPILER=${{steps.setup_clang.outputs.clang}} \
+          -D CMAKE_CXX_COMPILER=${{steps.setup_clang.outputs.clangxx}}
 
       - name: Configure MSVC CMake
         if: matrix.compiler == 'msvc'
