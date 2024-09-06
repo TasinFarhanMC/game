@@ -46,7 +46,7 @@ jobs:
 
       - name: Configure Clang CMake
         if: matrix.compiler == 'clang'
-        run: cmake --preset=test -D CMAKE_C_COMPILER=${{steps.setup_clang.outputs.clang}} -D CMAKE_CXX_COMPILER=${{steps.setup_clang.outputs.clangxx}}
+        run: cmake --preset=test -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++
 
       - name: Configure MSVC CMake
         if: matrix.compiler == 'msvc'
