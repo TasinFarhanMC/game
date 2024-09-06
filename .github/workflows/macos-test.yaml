@@ -2,9 +2,9 @@ name: MacOS Debug Build & Tests
 
 on:
   push:
-    branches: [ main ]
-  pull_request: 
-    branches: [ main ]
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
@@ -19,6 +19,11 @@ jobs:
       - name: Setup CMake & Ninja
         uses: lukka/get-cmake@latest
 
+      - name: Fix GLFW Bug
+        run: |
+         sed -i '' 's/[[:space:]]*ADD_ATTRIB(NSOpenGLPFAAccelerated);[[:space:]]*/ADD_ATTRIB(NSOpenGLPFARendererID);ADD_ATTRIB(kCGLRendererGenericFloatID);/' \
+         "${{github.workspace}}/vendor/glfw/src/nsgl_context.m"
+
       - name: Configure CMake
         run: cmake --preset=test
 
@@ -26,5 +31,5 @@ jobs:
         run: cmake --build --preset=debug -j $(sysctl -n hw.ncpu)
 
       - name: Test
-        working-directory: build/debug
+        working-directory: ${{github.workspace}}build/debug
         run: ctest --extra-verbose -C Debug -L CLI
