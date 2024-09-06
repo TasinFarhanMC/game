@@ -11,7 +11,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        compiler: [msvc, mingw, clang]
+        compiler: [ msvc, mingw, clang ]
 
     steps:
       - name: Checkout repository
@@ -24,7 +24,7 @@ jobs:
 
       - name: Setup MinGW
         id: setup_mingw
-        if: matrix.compiler == mingw
+        if: matrix.compiler == 'mingw'
         uses: egor-tensin/setup-mingw@v2
         with:
           cc: 0
@@ -32,7 +32,7 @@ jobs:
 
       - name: Setup Clang
         id: setup_clang
-        if: matrix.compiler == clang
+        if: matrix.compiler == 'clang'
         uses: egor-tensin/setup-clang@v1
         with:
           cc: 0
@@ -40,25 +40,25 @@ jobs:
       - name: Setup CMake & Ninja
         uses: lukka/get-cmake@latest
 
+      - name: Configure MSVC CMake
+        if: matrix.compiler == 'msvc'
+        run: cmake --preset=test
+
       - name: Configure MinGW CMake
-        if: matrix.compiler == mingw
+        if: matrix.compiler == 'mingw'
         run: cmake --preset=test -G Ninja
 
       - name: Configure Clang CMake
-        if: matrix.compiler == clang
+        if: matrix.compiler == 'clang'
         run: cmake --preset=test -G Ninja -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++
 
-      - name: Configure MSVC CMake
-        if: matrix.compiler == msvc
-        run: cmake --preset=test
-
       - name: Build MSBuild
-        if: matrix.compiler == msvc
+        if: matrix.compiler == 'msvc'
         run: cmake --build --preset=debug -- /m
 
       - name: Build Ninja
-        if: matrix.compiler == msvc
-        run: cmake --build --preset=debug -- -j
+        if: matrix.compiler != 'msvc'
+        run: cmake --build --preset=debug -j %NUMBER_OF_PROCESSORS%
 
       - name: Test
         working-directory: ${{github.workspace}}/build/debug
