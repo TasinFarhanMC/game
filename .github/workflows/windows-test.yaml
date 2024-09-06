@@ -29,5 +29,5 @@ jobs:
         run: cmake --build --preset=debug -- /maxcpucount
 
       - name: Test
-        working-directory: build/debug
+        working-directory: ${{github.workspace}}/build/debug
         run: ctest --extra-verbose -C Debug -L CLI

@@ -42,5 +42,10 @@ int main() {
 
   glfwDestroyWindow(window);
   glfwTerminate();
+
+  std::ofstream test_file("out.txt");
+  test_file << "Test For MacOS output" << std::endl;
+  test_file.close();
+
   return 0;
 }

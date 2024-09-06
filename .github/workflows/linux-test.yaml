@@ -34,5 +34,5 @@ jobs:
         run: cmake --build --preset=debug -j$(nproc)
 
       - name: Test
-        working-directory: build/debug
+        working-directory: ${{github.workspace}}/build/debug
         run: "DISPLAY=:99 ctest --extra-verbose -C Debug -L CLI"

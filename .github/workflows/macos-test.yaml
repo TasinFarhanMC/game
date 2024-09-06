@@ -32,4 +32,6 @@ jobs:
 
       - name: Test
         working-directory: ${{github.workspace}}/build/debug
-        run: ctest --extra-verbose -C Debug -L CLI
+        run: |
+          ctest -V -C Debug -L CLI
+          cat test/out.txt
