@@ -29,12 +29,12 @@ jobs:
         uses: lukka/get-cmake@latest
 
       - name: Install Dependencies
-        if: ${{ matrix.os }} == 'ubuntu'
+        if: ${{ matrix.os == 'ubuntu' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: libwayland-dev libxkbcommon-dev xorg-dev xvfb
 
-      - if: ${{ matrix.os }} == 'windows'
+      - if: matrix.os == 'windows'
         uses: ssciwr/setup-mesa-dist-win@v2
 
       - if: matrix.compiler == 'mingw'
@@ -49,11 +49,11 @@ jobs:
           cc: 0
 
       - name: Add Virtual Display
-        if: ${{ matrix.os }} == 'ubuntu'
+        if: matrix.os == 'ubuntu'
         run: "Xvfb :99 -screen 0 1920x1080x24 &"
 
       - name: Fix GLFW Bug
-        if: ${{ matrix.os }} == 'macos'
+        if: matrix.os == 'macos'
         run: |
          sed -i '' 's/[[:space:]]*ADD_ATTRIB(NSOpenGLPFAAccelerated);[[:space:]]*/ADD_ATTRIB(NSOpenGLPFARendererID);ADD_ATTRIB(kCGLRendererGenericFloatID);/' \
          "${{github.workspace}}/vendor/glfw/src/nsgl_context.m"
@@ -76,21 +76,21 @@ jobs:
       - name: Configure CMake
         if: matrix.compiler == 'msvc'
         run: cmake --preset=test
-      - if: ${{ matrix.os }} != 'windows' || ${{ matrix.compiler }} == 'mingw'
+      - if: matrix.os != 'windows' || matrix.compiler == 'mingw'
         run: cmake --preset=test -G Ninja
       - if: matrix.compiler == 'clang'
         run: cmake --preset=test -G Ninja -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++
 
       - name: Build
-        if: ${{ matrix.os }} == 'windows'
+        if: matrix.os == 'windows'
         run: cmake --build --preset=debug -j "$env:NUMBER_OF_PROCESSORS"
-      - if: ${{ matrix.os }} != 'windows'
+      - if: matrix.os != 'windows'
         run: cmake --build --preset=debug
 
       - name: Test
-        if: ${{ matrix.os }} == 'ubuntu'
+        if: matrix.os == 'ubuntu'
         working-directory: ${{github.workspace}}/build/debug
         run: "DISPLAY=:99 ctest --extra-verbose -C Debug -L CLI"
-      - if: ${{ matrix.os }} != 'ubuntu'
+      - if: matrix.os != 'ubuntu'
         working-directory: ${{github.workspace}}/build/debug
         run: ctest --extra-verbose -C Debug -L CLI
