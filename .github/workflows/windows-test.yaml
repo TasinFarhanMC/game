@@ -42,18 +42,18 @@ jobs:
 
       - name: Configure MinGW CMake
         if: matrix.compiler == 'mingw'
-        run: cmake --preset=test -D CMAKE_C_COMPILER=${{steps.setup_mingw.outputs.gcc}} -D CMAKE_CXX_COMPILER=${{steps.setup_mingw.outputs.gxx}}
+        run: cmake --preset=test -G Ninja -D CMAKE_C_COMPILER=${{steps.setup_mingw.outputs.gcc}} -D CMAKE_CXX_COMPILER=${{steps.setup_mingw.outputs.gxx}}
 
       - name: Configure Clang CMake
         if: matrix.compiler == 'clang'
-        run: cmake --preset=test -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++
+        run: cmake --preset=test -G Ninja -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++
 
       - name: Configure MSVC CMake
         if: matrix.compiler == 'msvc'
-        run: cmake --preset=test
+        run: cmake --preset=test -G Ninja
 
       - name: Build
-        run: cmake --build --preset=debug -- /maxcpucount
+        run: cmake --build --preset=debug -j %NUMBER_OF_PROCESSOR%
 
       - name: Test
         working-directory: ${{github.workspace}}/build/debug
