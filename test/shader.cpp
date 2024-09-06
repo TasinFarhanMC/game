@@ -10,8 +10,6 @@ static void glfw_error_callback(int error, const char *description) { std::cerr 
 int main() {
   glfwSetErrorCallback(glfw_error_callback);
 
-  std::cout << "Hello from test start" << std::endl;
-
   if (!glfwInit()) {
     std::cerr << "Unable to init glfw" << std::endl;
     return 1;
@@ -44,10 +42,6 @@ int main() {
 
   glfwDestroyWindow(window);
   glfwTerminate();
-
-  std::ofstream test_file("out.txt");
-  test_file << "Test For MacOS output" << std::endl;
-  test_file.close();
 
   return 0;
 }

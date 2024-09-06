@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        compiler: [msvc, mingw, clang]
 
     steps:
       - name: Checkout repository
@@ -19,10 +22,18 @@ jobs:
       - name: Setup OpenGL Drivers
         uses: ssciwr/setup-mesa-dist-win@v2
 
+      - name: Setup MinGW
+        if: matrix.compiler == 'mingw'
+        uses: egor-tensin/setup-mingw@v2
+
+      - name: Setup Clang
+        if: matrix.compiler == 'mingw'
+        uses: egor-tensin/setup-mingw@v2
+
       - name: Setup CMake & Ninja
         uses: lukka/get-cmake@latest
 
-      - name: Configure CMake
+      - name: Configure MinGW CMake
         run: cmake --preset=test
 
       - name: Build
