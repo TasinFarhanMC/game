@@ -8,7 +8,9 @@
       "cacheVariables": {
         "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/out",
         "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/out",
-        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/out"
+        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/out",
+        "GLFW_BUILD_DOCS": "OFF",
+        "GLFW_INSTALL": "OFF"
       }
     },
     {
