@@ -25,7 +25,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 
 set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set(INCLUDE_DIRS "${SRC_DIR}")
+set(INCLUDE_DIRS "")
 
 file(GLOB_RECURSE SRC_FILES "${SRC_DIR}/*.c" "${SRC_DIR}/*.cpp")
 

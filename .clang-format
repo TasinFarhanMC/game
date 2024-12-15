@@ -10,3 +10,4 @@ EmptyLineBeforeAccessModifier: Always
 NamespaceIndentation: Inner
 PackConstructorInitializers: CurrentLine
 SpaceBeforeCpp11BracedList: true
+

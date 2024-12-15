@@ -32,7 +32,7 @@ c_id="${input//[^a-zA-Z0-9]/_}"
 c_name="$(basename "$input")"
 c_name="${c_name//[^a-zA-Z0-9]/_}"
 
-"$OBJC" -I binary -O "$format" "$input" "$output"
+"$OBJC" -I binary -O "$FORMAT" "$input" "$output"
 if [ $? -ne 0 ]; then
   echo "Error: objcopy failed."
   exit 4
