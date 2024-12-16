@@ -4,7 +4,6 @@ project(PONG C CXX)
 # Make Cmake Use New OpenGL
 cmake_policy(SET CMP0072 NEW)
 
-# C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -20,7 +19,7 @@ option(GLM_ENABLE_SIMD_SSE4_2 ON)
 FetchContent_Declare(
   glm
   GIT_REPOSITORY https://github.com/g-truc/glm.git
-  GIT_TAG bf71a834948186f4097caa076cd2663c69a10e1e # tags/1.0.1
+  GIT_TAG 1.0.1 
 )
 FetchContent_MakeAvailable(glm)
 
