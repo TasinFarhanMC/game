@@ -71,7 +71,7 @@ int main(void) {
   }
 
   bool event_flag = true;
-  TimePoint start = SystemClock::now();
+  TimePoint start = SteadyClock::now();
   while (event_flag) {
     while (XPending(display)) {
       XEvent event;
@@ -89,7 +89,8 @@ int main(void) {
     }
 
     this_thread::sleep_until(start + tick);
-    start = SystemClock::now();
+    std::cout << 1.0f / Seconds<float>(SteadyClock::now() - start).count() << std::endl;
+    start = SteadyClock::now();
   }
 
   glXDestroyContext(display, context);
