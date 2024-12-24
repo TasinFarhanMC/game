@@ -1,60 +1,16 @@
-#include "glad/gl.h"
+#pragma once
 
-#include <atomic>
-#include <functional>
-#include <glm/glm.hpp>
+#include <glad/gl.h>
+
+#include <betr/atomic.hpp>
+
 #include <initializer_list>
 #include <iostream>
-#include <thread>
 
-using u8 = std::uint8_t;
-using u32 = std::uint32_t;
-using usize = std::size_t;
-using Vec2 = glm::vec2;
-using IVec2 = glm::ivec2;
-using U8Vec2 = glm::u8vec2;
-using Thread = std::thread;
-template <typename T> using InitList = std::initializer_list<T>;
-template <typename T> using Atomic = std::atomic<T>;
-template <typename Signature> using Function = std::function<Signature>;
+using betr::AtomicFlag;
 
-struct Vertex {
-  Vec2 position;
-  U8Vec2 scale;
-  U8Vec2 tex;
-
-  Vertex(float x, float y, u8 w, u8 h, u8 tex_no, u8 tex_id) : position(x, y), scale(w, h), tex(tex_no, tex_id) {}
-};
-
-class Flag {
-  Atomic<bool> flag;
-
-public:
-  Flag(const bool value) : flag(value) {}
-
-  bool operator=(const bool value) { return flag.exchange(value, std::memory_order_acq_rel); }
-  operator bool() const { return flag.load(std::memory_order_acquire); }
-};
-
-template <typename T> class Signal {
-  Flag flag = false;
-  Atomic<T> value;
-
-public:
-  void set(const T value) {
-    flag = true;
-    this->value.store(value, std::memory_order_release);
-  }
-  void set(const Function<T(const T)> mutate) {
-    flag = true;
-    value.store(mutate(value.load(std::memory_order_acquire)), std::memory_order_release);
-  }
-  void handle(const Function<void(const T)> handler) {
-    if (flag) { handler(value.load(std::memory_order_acquire)); }
-  }
-
-  Signal(const T value) { this->value.store(value, std::memory_order_release); }
-};
+extern AtomicFlag running;
+extern void render();
 
 class Buffer {
   GLuint id;

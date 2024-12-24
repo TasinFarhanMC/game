@@ -1,197 +1,104 @@
-#include "glad/gl.h"
-#include "shader_src.hpp"
-#include "types.hpp"
+#define USING_BETR
 
-#include <GL/gl.h>
-#include <GL/glx.h>
-#include <GL/glxext.h>
-#include <X11/Xlib.h>
-#include <cstddef>
+#include <betr/chrono.hpp>
+#include <betr/thread.hpp>
+
 #include <iostream>
 
-Display *display = nullptr;
-Window window = -1;
-GLXContext context = NULL;
-Flag running = true;
-Signal<bool> v_sync = false;
+#include <glad/gl.h>
+#include <glad/glx.h>
+#include <glm/vec2.hpp>
+#include <unistd.h>
 
-// {{{ Render
-PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB;
-PFNGLXSWAPINTERVALEXTPROC glXSwapIntervalEXT;
+using IVec2 = glm::ivec2;
 
-void render() {
-  if (!glXMakeCurrent(display, window, context)) {
-    std::cerr << "Failed to make GL context current in render thread." << std::endl;
-    return;
-  }
+constexpr NanoSeconds tick(Nano::den / 30);
 
-  if (!gladLoadGL((GLADloadfunc)glXGetProcAddress)) {
-    std::cerr << "Unable to init GLAD" << std::endl;
-    return;
-  }
-  glXSwapIntervalEXT(display, window, 0);
+Display *display;
+Window window;
+GLXContext context;
 
-  GLuint vao;
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
-
-  Buffer base_vbo(GL_ARRAY_BUFFER, {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f}, GL_STATIC_DRAW);
-  glBindVertexBuffer(0, base_vbo, 0, sizeof(Vec2));
-
-  Buffer vbo(GL_ARRAY_BUFFER, InitList<Vertex> {{0.0f, 0.0f, 255, 255, 0, 0}, {0.0f, 0.0f, 0, 0, 0, 0}}, GL_STATIC_DRAW);
-  glBindVertexBuffer(1, vbo, 0, sizeof(Vertex));
-  glVertexBindingDivisor(1, 1);
-
-  glVertexAttribFormat(0, 2, GL_FLOAT, GL_FALSE, 0);
-  glEnableVertexAttribArray(0);
-  glVertexAttribBinding(0, 0);
-
-  glVertexAttribFormat(1, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
-  glEnableVertexAttribArray(1);
-  glVertexAttribBinding(1, 1);
-
-  glVertexAttribIFormat(2, 2, GL_UNSIGNED_BYTE, offsetof(Vertex, scale));
-  glEnableVertexAttribArray(2);
-  glVertexAttribBinding(2, 1);
-
-  Program vert_program(GL_VERTEX_SHADER, vert_src);
-  Program frag_program(GL_FRAGMENT_SHADER, frag_src);
-
-  GLuint pipeline;
-  glGenProgramPipelines(1, &pipeline);
-  glBindProgramPipeline(pipeline);
-
-  glUseProgramStages(pipeline, GL_VERTEX_SHADER_BIT, vert_program);
-  glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT, frag_program);
-
-  while (running) {
-    glClear(GL_COLOR_BUFFER_BIT);
-    glDrawArraysInstancedBaseInstance(GL_TRIANGLE_FAN, 0, 4, 2, 0);
-    glXSwapBuffers(display, window);
-
-    v_sync.handle([](const bool state) { glXSwapIntervalEXT(display, window, state); });
-  }
-
-  glDeleteVertexArrays(1, &vao);
-  glDeleteProgramPipelines(1, &pipeline);
-  glXDestroyContext(display, context);
-}
-// }}}
-
-int main() {
-  // {{{ Init
+int main(void) {
   display = XOpenDisplay(NULL);
   if (!display) {
-    std::cerr << "Unable to open X Display" << std::endl;
+    std::cerr << "Unable to connect to X Server" << std::endl;
     return 1;
   }
 
   const int screen = DefaultScreen(display);
-  const Window root = XRootWindow(display, screen);
+  const Window root = RootWindow(display, screen);
+  const IVec2 display_size = {DisplayWidth(display, screen), DisplayHeight(display, screen)};
+  const IVec2 window_size = display_size * 2 / 3;
+  const IVec2 window_pos = (display_size - window_size) / 2;
 
-  // {{{ Framebuffer Config
-  GLXFBConfig frame_buf_config;
-  {
-    const int visual_attribs[] = {// RGBA Render
-                                  GLX_RENDER_TYPE, GLX_RGBA_BIT,
-                                  // Drawable Window
-                                  GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
-                                  // Double Buffer
-                                  GLX_DOUBLEBUFFER, True,
-                                  // Red Channel
-                                  GLX_RED_SIZE, 8,
-                                  // Green Channel
-                                  GLX_GREEN_SIZE, 8,
-                                  // Blue Channel
-                                  GLX_BLUE_SIZE, 8,
-                                  // Alpha Channel
-                                  GLX_ALPHA_SIZE, 8, None
-    };
+  Visual *visual = DefaultVisual(display, screen);
+  const Colormap colormap = XCreateColormap(display, root, visual, AllocNone);
 
-    int frame_buf_count;
-    GLXFBConfig *frame_buf_configs = glXChooseFBConfig(display, screen, visual_attribs, &frame_buf_count);
-    if (!frame_buf_configs) {
-      std::cerr << "Failed to get a framebuffer config" << std::endl;
-      XCloseDisplay(display);
-      return 1;
-    }
+  XSetWindowAttributes window_attributes;
+  window_attributes.event_mask = ExposureMask | KeyPressMask;
+  window_attributes.colormap = colormap;
+  window_attributes.background_pixel = BlackPixel(display, screen);
 
-    frame_buf_config = frame_buf_configs[0];
-    XFree(frame_buf_configs);
-  }
-
-  XVisualInfo *visual_info = glXGetVisualFromFBConfig(display, frame_buf_config);
-  if (!visual_info) {
-    std::cerr << "No visual info found" << std::endl;
-    XCloseDisplay(display);
+  window = XCreateWindow(
+      display, root, window_pos.x, window_pos.y, window_size.x, window_size.y, 0, DefaultDepth(display, screen), InputOutput, visual,
+      CWBackPixel | CWColormap | CWEventMask, &window_attributes
+  );
+  if (!window) {
+    std::cerr << "Unable to create X Window" << std::endl;
     return 1;
   }
 
-  // }}}
-  // {{{ Window
-  XSetWindowAttributes window_attribs;
-  window_attribs.colormap = XCreateColormap(display, root, visual_info->visual, AllocNone);
-  window_attribs.event_mask = ExposureMask | KeyPressMask;
-  window_attribs.background_pixel = BlackPixel(display, screen);
-
-  const unsigned int window_size = std::min(DisplayWidth(display, screen), DisplayHeight(display, screen)) * 2 / 3;
-  window = XCreateWindow(
-      display, root, 0, 0, window_size, window_size, 0, visual_info->depth, InputOutput, visual_info->visual,
-      CWColormap | CWBackPixel | CWEventMask, &window_attribs
-  );
   XMapWindow(display, window);
-  // }}}
-  // {{{ Create Context
-  glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC)glXGetProcAddress((const GLubyte *)"glXCreateContextAttribsARB");
-  glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)glXGetProcAddress((const GLubyte *)("glXSwapIntervalEXT"));
+  XStoreName(display, window, "Game");
 
-  const int context_attribs[] = {// Major Version
-                                 GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
-                                 // Minor Version
-                                 GLX_CONTEXT_MINOR_VERSION_ARB, 3,
-                                 // Profile
-                                 GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB, None
-  };
+  if (!gladLoaderLoadGLX(display, screen)) {
+    std::cerr << "Unable to load GLX" << std::endl;
+    return 1;
+  }
 
-  context = glXCreateContextAttribsARB(display, frame_buf_config, nullptr, true, context_attribs);
+  const GLint visual_attributes[] = {GLX_RENDER_TYPE, GLX_RGBA_BIT, GLX_DOUBLEBUFFER, 1, None};
+
+  int num_fbc = 0;
+  GLXFBConfig *fbc = glXChooseFBConfig(display, screen, visual_attributes, &num_fbc);
+
+  const GLint context_attributes[] = {GLX_CONTEXT_MAJOR_VERSION_ARB,    3,   GLX_CONTEXT_MINOR_VERSION_ARB, 3, GLX_CONTEXT_PROFILE_MASK_ARB,
+                                      GLX_CONTEXT_CORE_PROFILE_BIT_ARB, None};
+
+  context = glXCreateContextAttribsARB(display, fbc[0], NULL, 1, context_attributes);
   if (!context) {
-    fprintf(stderr, "Failed to create OpenGL context\n");
-    return -1;
+    std::cerr << "Unable to create GL Context" << std::endl;
+    return 1;
   }
-  // }}}
-  // }}}
-  // {{{ Loop
-  Thread render_thread(render);
 
-  Atom wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", false);
-  XSetWMProtocols(display, window, &wm_delete_window, 1);
+  bool event_flag = true;
+  TimePoint start = SystemClock::now();
+  while (event_flag) {
+    while (XPending(display)) {
+      XEvent event;
+      XNextEvent(display, &event);
 
-  const auto clean = [&render_thread]() {
-    running = false;
-    render_thread.join();
-
-    XDestroyWindow(display, window);
-    XCloseDisplay(display);
-
-    return 0;
-  };
-
-  XEvent event;
-  while (true) {
-    XNextEvent(display, &event);
-
-    switch (event.type) {
-    case KeyPress:
-      switch (XLookupKeysym(&event.xkey, 0)) {
-      case XK_F1:
-        v_sync.set([](auto value) { return !value; });
+      switch (event.type) {
+      case KeyPress:
+        switch (XLookupKeysym(&event.xkey, 0)) {
+        case XK_Escape:
+          event_flag = false;
+          break;
+        }
         break;
-      case XK_Escape:
-        return clean();
       }
-    case ClientMessage:
-      if (event.xclient.data.l[0] == wm_delete_window) { return clean(); }
     }
+
+    this_thread::sleep_until(start + tick);
+    start = SystemClock::now();
   }
-  // }}}
+
+  glXDestroyContext(display, context);
+
+  XDestroyWindow(display, window);
+  XFreeColormap(display, colormap);
+  XCloseDisplay(display);
+
+  gladLoaderUnloadGLX();
+  gladLoaderUnloadGL();
+  return 0;
 }

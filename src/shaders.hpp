@@ -1,4 +1,6 @@
-static const char *const vert_src = R"(
+#pragma once
+
+inline constexpr const char *vert_src = R"(
   #version 330 core
   #extension GL_ARB_shading_language_420pack  : enable
   #extension GL_ARB_explicit_uniform_location : enable
@@ -15,7 +17,7 @@ static const char *const vert_src = R"(
   }
 )";
 
-static const char *const frag_src = R"(
+inline constexpr const char *frag_src = R"(
   #version 330 core
   #extension GL_ARB_shading_language_420pack  : enable
   #extension GL_ARB_explicit_uniform_location : enable

@@ -7,4 +7,4 @@ if [[ ! -d "$SCRIPT_DIR/build" || "$1" ]]; then
   cmake --preset debug || exit
 fi
 
-cmake --build --preset debug -- -j "$(nproc)" && ./bin/pong
+cmake --build --preset debug -- -j "$(nproc)" && ./bin/game
