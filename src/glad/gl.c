@@ -44,6 +44,7 @@ int GLAD_GL_ARB_color_buffer_float = 0;
 int GLAD_GL_ARB_copy_buffer = 0;
 int GLAD_GL_ARB_draw_buffers = 0;
 int GLAD_GL_ARB_draw_elements_base_vertex = 0;
+int GLAD_GL_ARB_draw_indirect = 0;
 int GLAD_GL_ARB_draw_instanced = 0;
 int GLAD_GL_ARB_explicit_uniform_location = 0;
 int GLAD_GL_ARB_framebuffer_object = 0;
@@ -370,6 +371,7 @@ PFNGLDISABLEVERTEXATTRIBARRAYARBPROC glad_glDisableVertexAttribArrayARB = NULL;
 PFNGLDISABLEIPROC glad_glDisablei = NULL;
 PFNGLDRAWARRAYSPROC glad_glDrawArrays = NULL;
 PFNGLDRAWARRAYSEXTPROC glad_glDrawArraysEXT = NULL;
+PFNGLDRAWARRAYSINDIRECTPROC glad_glDrawArraysIndirect = NULL;
 PFNGLDRAWARRAYSINSTANCEDPROC glad_glDrawArraysInstanced = NULL;
 PFNGLDRAWARRAYSINSTANCEDARBPROC glad_glDrawArraysInstancedARB = NULL;
 PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC glad_glDrawArraysInstancedBaseInstance = NULL;
@@ -380,6 +382,7 @@ PFNGLDRAWBUFFERSARBPROC glad_glDrawBuffersARB = NULL;
 PFNGLDRAWBUFFERSATIPROC glad_glDrawBuffersATI = NULL;
 PFNGLDRAWELEMENTSPROC glad_glDrawElements = NULL;
 PFNGLDRAWELEMENTSBASEVERTEXPROC glad_glDrawElementsBaseVertex = NULL;
+PFNGLDRAWELEMENTSINDIRECTPROC glad_glDrawElementsIndirect = NULL;
 PFNGLDRAWELEMENTSINSTANCEDPROC glad_glDrawElementsInstanced = NULL;
 PFNGLDRAWELEMENTSINSTANCEDARBPROC glad_glDrawElementsInstancedARB = NULL;
 PFNGLDRAWELEMENTSINSTANCEDBASEINSTANCEPROC glad_glDrawElementsInstancedBaseInstance = NULL;
@@ -2489,6 +2492,11 @@ static void glad_gl_load_GL_ARB_draw_elements_base_vertex( GLADuserptrloadfunc l
     glad_glDrawElementsInstancedBaseVertex = (PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXPROC) load(userptr, "glDrawElementsInstancedBaseVertex");
     glad_glDrawRangeElementsBaseVertex = (PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC) load(userptr, "glDrawRangeElementsBaseVertex");
     glad_glMultiDrawElementsBaseVertex = (PFNGLMULTIDRAWELEMENTSBASEVERTEXPROC) load(userptr, "glMultiDrawElementsBaseVertex");
+}
+static void glad_gl_load_GL_ARB_draw_indirect( GLADuserptrloadfunc load, void* userptr) {
+    if(!GLAD_GL_ARB_draw_indirect) return;
+    glad_glDrawArraysIndirect = (PFNGLDRAWARRAYSINDIRECTPROC) load(userptr, "glDrawArraysIndirect");
+    glad_glDrawElementsIndirect = (PFNGLDRAWELEMENTSINDIRECTPROC) load(userptr, "glDrawElementsIndirect");
 }
 static void glad_gl_load_GL_ARB_draw_instanced( GLADuserptrloadfunc load, void* userptr) {
     if(!GLAD_GL_ARB_draw_instanced) return;
@@ -4749,6 +4757,7 @@ static int glad_gl_find_extensions_gl(void) {
     GLAD_GL_ARB_copy_buffer = glad_gl_has_extension(exts, exts_i, "GL_ARB_copy_buffer");
     GLAD_GL_ARB_draw_buffers = glad_gl_has_extension(exts, exts_i, "GL_ARB_draw_buffers");
     GLAD_GL_ARB_draw_elements_base_vertex = glad_gl_has_extension(exts, exts_i, "GL_ARB_draw_elements_base_vertex");
+    GLAD_GL_ARB_draw_indirect = glad_gl_has_extension(exts, exts_i, "GL_ARB_draw_indirect");
     GLAD_GL_ARB_draw_instanced = glad_gl_has_extension(exts, exts_i, "GL_ARB_draw_instanced");
     GLAD_GL_ARB_explicit_uniform_location = glad_gl_has_extension(exts, exts_i, "GL_ARB_explicit_uniform_location");
     GLAD_GL_ARB_framebuffer_object = glad_gl_has_extension(exts, exts_i, "GL_ARB_framebuffer_object");
@@ -4902,6 +4911,7 @@ int gladLoadGLUserPtr( GLADuserptrloadfunc load, void *userptr) {
     glad_gl_load_GL_ARB_copy_buffer(load, userptr);
     glad_gl_load_GL_ARB_draw_buffers(load, userptr);
     glad_gl_load_GL_ARB_draw_elements_base_vertex(load, userptr);
+    glad_gl_load_GL_ARB_draw_indirect(load, userptr);
     glad_gl_load_GL_ARB_draw_instanced(load, userptr);
     glad_gl_load_GL_ARB_framebuffer_object(load, userptr);
     glad_gl_load_GL_ARB_geometry_shader4(load, userptr);

@@ -5,9 +5,8 @@ AlignOperands: AlignAfterOperator
 AllowShortBlocksOnASingleLine: Always
 AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLoopsOnASingleLine: true
-ColumnLimit: 144
+ColumnLimit: 152
 EmptyLineBeforeAccessModifier: Always
 NamespaceIndentation: Inner
 PackConstructorInitializers: CurrentLine
 SpaceBeforeCpp11BracedList: true
-

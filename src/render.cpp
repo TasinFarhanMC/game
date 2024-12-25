@@ -30,10 +30,11 @@ void render() {
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  Buffer base_vbo(GL_ARRAY_BUFFER, {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f}, GL_STATIC_DRAW);
+  Buffer<float> base_vbo(GL_ARRAY_BUFFER, {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f});
   glBindVertexBuffer(0, base_vbo, 0, sizeof(Vec2));
 
-  Buffer vbo(GL_ARRAY_BUFFER, std::initializer_list<Vertex> {{160.0f - 16, 90.0f - 16, 32, 32, 0, 0}}, GL_STATIC_DRAW);
+  DynamicBuffer<Vertex> vbo(GL_ARRAY_BUFFER, {{160.0f - 16, 90.0f - 16, 32, 32, 0, 0}});
+
   glBindVertexBuffer(1, vbo, 0, sizeof(Vertex));
   glVertexBindingDivisor(1, 1);
 
