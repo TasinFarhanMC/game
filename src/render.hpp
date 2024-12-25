@@ -7,9 +7,6 @@
 #include <initializer_list>
 #include <iostream>
 
-using betr::AtomicFlag;
-
-extern AtomicFlag running;
 extern void render();
 
 class Buffer {

@@ -1,24 +1,30 @@
-#define USING_BETR
+#include "window.hpp"
+#include <render.hpp>
+
+#include <betr/namespace.hpp>
 
 #include <betr/chrono.hpp>
+#include <betr/glm/vec2.hpp>
 #include <betr/thread.hpp>
 
 #include <iostream>
 
 #include <glad/gl.h>
 #include <glad/glx.h>
-#include <glm/vec2.hpp>
 #include <unistd.h>
 
-using IVec2 = glm::ivec2;
+constexpr NanoSeconds tick = duration_cast<NanoSeconds<>>(Seconds<float>(1.0 / 30.0f));
 
-constexpr NanoSeconds tick(Nano::den / 30);
-
+AtomicFlag running;
 Display *display;
 Window window;
 GLXContext context;
 
-int main(void) {
+int load_context() { return glXMakeCurrent(display, window, context); }
+void unload_context() { glXMakeCurrent(display, None, None); }
+void swap_buffers() { glXSwapBuffers(display, window); }
+
+int main() {
   display = XOpenDisplay(NULL);
   if (!display) {
     std::cerr << "Unable to connect to X Server" << std::endl;
@@ -70,9 +76,11 @@ int main(void) {
     return 1;
   }
 
-  bool event_flag = true;
+  running.test_and_set();
+  Thread render_thread(render);
+
   TimePoint start = SteadyClock::now();
-  while (event_flag) {
+  while (running.test()) {
     while (XPending(display)) {
       XEvent event;
       XNextEvent(display, &event);
@@ -81,7 +89,7 @@ int main(void) {
       case KeyPress:
         switch (XLookupKeysym(&event.xkey, 0)) {
         case XK_Escape:
-          event_flag = false;
+          running.clear();
           break;
         }
         break;
@@ -89,10 +97,10 @@ int main(void) {
     }
 
     this_thread::sleep_until(start + tick);
-    std::cout << 1.0f / Seconds<float>(SteadyClock::now() - start).count() << std::endl;
     start = SteadyClock::now();
   }
 
+  render_thread.join();
   glXDestroyContext(display, context);
 
   XDestroyWindow(display, window);
