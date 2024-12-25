@@ -25,16 +25,15 @@ public:
 
   ~Buffer() { glDeleteBuffers(1, &id); }
 
-protected:
-  const GLenum type;
-  const GLenum usage;
-  GLuint id;
-
-private:
   Buffer(Buffer &&) = delete;
   Buffer(const Buffer &) = delete;
   Buffer &operator=(Buffer &&) = delete;
   Buffer &operator=(const Buffer &) = delete;
+
+protected:
+  const GLenum type;
+  const GLenum usage;
+  GLuint id;
 };
 
 template <typename T> class DynamicBuffer final : public Buffer<T> {
@@ -54,18 +53,40 @@ public:
 };
 
 class VertexArray {
-  GLuint id;
+public:
+  VertexArray() {
+    glGenVertexArrays(1, &id);
+    glBindVertexArray(id);
+  };
+
+  void bind_buffer(GLuint buffer, GLsizei stride, GLuint divisor = 0) const noexcept {
+    glBindVertexBuffer(buffer, buffer, 0, stride);
+    glVertexBindingDivisor(buffer, divisor);
+  }
+
+  void add_attib(GLuint buffer, GLuint index, GLint size, GLenum type, GLboolean normalized, GLuint offset) const noexcept {
+    glVertexAttribFormat(index, size, type, normalized, offset);
+    glEnableVertexAttribArray(index);
+    glVertexAttribBinding(index, buffer);
+  }
+
+  void add_integer_attib(GLuint buffer, GLuint index, GLint size, GLenum type, GLuint offset) const noexcept {
+    glVertexAttribIFormat(index, size, type, offset);
+    glEnableVertexAttribArray(index);
+    glVertexAttribBinding(index, buffer);
+  }
+
+  operator GLuint() const noexcept { return id; }
+
+  ~VertexArray() { glDeleteBuffers(1, &id); };
 
   VertexArray(VertexArray &&) = delete;
   VertexArray(const VertexArray &) = delete;
   VertexArray &operator=(VertexArray &&) = delete;
   VertexArray &operator=(const VertexArray &) = delete;
 
-public:
-  VertexArray() { glGenVertexArrays(1, &id); };
-  ~VertexArray() { glDeleteBuffers(1, &id); };
-
-  operator GLuint() const noexcept { return id; }
+private:
+  GLuint id;
 };
 
 class Program {
