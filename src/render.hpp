@@ -4,7 +4,6 @@
 
 #include <betr/atomic.hpp>
 #include <betr/init_list.hpp>
-#include <betr/vector.hpp>
 
 #include <iostream>
 
@@ -36,21 +35,7 @@ protected:
   GLuint id;
 };
 
-template <typename T> class DynamicBuffer final : public Buffer<T> {
-public:
-  DynamicBuffer(GLenum type, const std::initializer_list<T> data, GLenum usage = GL_DYNAMIC_DRAW) : Buffer<T>(type, data, usage), data(data) {}
-  DynamicBuffer(GLenum type, const std::initializer_list<T> data, const size_t size, GLenum usage = GL_DYNAMIC_DRAW) : Buffer<T>(type, {}, usage) {
-    this->data.reserve(size);
-    this->data = data;
-  }
-
-  void update() const {
-    glBindBuffer(this->type, this->id);
-    glBufferData(this->type, this->data.size() * sizeof(T), this->data.data(), this->usage);
-  }
-
-  betr::Vector<T> data;
-};
+template <typename T> class DynamicBuffer final : public Buffer<T> {};
 
 class VertexArray {
 public:
@@ -77,7 +62,6 @@ public:
   }
 
   operator GLuint() const noexcept { return id; }
-
   ~VertexArray() { glDeleteBuffers(1, &id); };
 
   VertexArray(VertexArray &&) = delete;
@@ -90,13 +74,6 @@ private:
 };
 
 class Program {
-  GLuint id;
-
-  Program(Program &&) = delete;
-  Program(const Program &) = delete;
-  Program &operator=(Program &&) = delete;
-  Program &operator=(const Program &) = delete;
-
 public:
   Program(GLenum type, const char *source) {
     GLint success;
@@ -141,6 +118,34 @@ public:
   }
 
   operator GLuint() const noexcept { return id; }
-
   ~Program() { glDeleteProgram(id); }
+
+  Program(Program &&) = delete;
+  Program(const Program &) = delete;
+  Program &operator=(Program &&) = delete;
+  Program &operator=(const Program &) = delete;
+
+private:
+  GLuint id;
+};
+
+class Pipeline {
+public:
+  Pipeline() {
+    glGenProgramPipelines(1, &id);
+    glBindProgramPipeline(id);
+  };
+
+  void use_stages(GLbitfield stages, GLuint program) const noexcept { glUseProgramStages(id, stages, program); }
+
+  operator GLuint() const noexcept { return id; }
+  ~Pipeline() { glDeleteProgramPipelines(1, &id); };
+
+  Pipeline(Pipeline &&) = delete;
+  Pipeline(const Pipeline &) = delete;
+  Pipeline &operator=(Pipeline &&) = delete;
+  Pipeline &operator=(const Pipeline &) = delete;
+
+private:
+  GLuint id;
 };

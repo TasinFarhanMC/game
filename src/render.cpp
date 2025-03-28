@@ -52,12 +52,9 @@ void render() {
     Program vert_program(GL_VERTEX_SHADER, vert_src);
     Program frag_program(GL_FRAGMENT_SHADER, frag_src);
 
-    GLuint pipeline;
-    glGenProgramPipelines(1, &pipeline);
-    glBindProgramPipeline(pipeline);
-
-    glUseProgramStages(pipeline, GL_VERTEX_SHADER_BIT, vert_program);
-    glUseProgramStages(pipeline, GL_FRAGMENT_SHADER_BIT, frag_program);
+    Pipeline pipeline;
+    pipeline.use_stages(GL_VERTEX_SHADER_BIT, vert_program);
+    pipeline.use_stages(GL_FRAGMENT_SHADER_BIT, frag_program);
 
     DynamicBuffer<IndirectCMD> indirect(GL_DRAW_INDIRECT_BUFFER, {{4, 1, 0, 0}});
 
@@ -66,8 +63,6 @@ void render() {
       glMultiDrawArraysIndirect(GL_TRIANGLE_FAN, 0, indirect.data.size(), 0);
       swap_buffers();
     }
-
-    glDeleteProgramPipelines(1, &pipeline);
   }
 
   unload_context();

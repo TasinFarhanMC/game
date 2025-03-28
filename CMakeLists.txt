@@ -29,7 +29,7 @@ FetchContent_Declare(
   betr
   GIT_REPOSITORY https://github.com/TasinFarhanMC/betr.git
   GIT_SHALLOW TRUE
-  GIT_TAG main
+  GIT_TAG v0.2.4
 )
 FetchContent_MakeAvailable(betr)
 

@@ -4,8 +4,8 @@
 #include <betr/namespace.hpp>
 
 #include <betr/chrono.hpp>
-#include <betr/glm/vec2.hpp>
 #include <betr/thread.hpp>
+#include <glm/vec2.hpp>
 
 #include <iostream>
 
