@@ -5,13 +5,15 @@
 #include <betr/atomic.hpp>
 #include <betr/init_list.hpp>
 
-#include <iostream>
+#include <print>
 
 extern void render();
 
 template <typename T> class Buffer {
 public:
-  Buffer(GLenum type, const betr::InitList<T> data, GLenum usage = GL_STATIC_DRAW) : type(type), usage(usage) {
+  Buffer(GLenum type, const betr::InitList<T> data,
+         GLenum usage = GL_STATIC_DRAW)
+      : type(type), usage(usage) {
     glGenBuffers(1, &id);
     glBindBuffer(type, id);
     glBufferData(type, data.size() * sizeof(T), data.begin(), usage);
@@ -35,8 +37,6 @@ protected:
   GLuint id;
 };
 
-template <typename T> class DynamicBuffer final : public Buffer<T> {};
-
 class VertexArray {
 public:
   VertexArray() {
@@ -44,18 +44,21 @@ public:
     glBindVertexArray(id);
   };
 
-  void bind_buffer(GLuint buffer, GLsizei stride, GLuint divisor = 0) const noexcept {
+  void bind_buffer(GLuint buffer, GLsizei stride,
+                   GLuint divisor = 0) const noexcept {
     glBindVertexBuffer(buffer, buffer, 0, stride);
     glVertexBindingDivisor(buffer, divisor);
   }
 
-  void add_attib(GLuint buffer, GLuint index, GLint size, GLenum type, GLboolean normalized, GLuint offset) const noexcept {
+  void add_attib(GLuint buffer, GLuint index, GLint size, GLenum type,
+                 GLboolean normalized, GLuint offset) const noexcept {
     glVertexAttribFormat(index, size, type, normalized, offset);
     glEnableVertexAttribArray(index);
     glVertexAttribBinding(index, buffer);
   }
 
-  void add_integer_attib(GLuint buffer, GLuint index, GLint size, GLenum type, GLuint offset) const noexcept {
+  void add_integer_attib(GLuint buffer, GLuint index, GLint size, GLenum type,
+                         GLuint offset) const noexcept {
     glVertexAttribIFormat(index, size, type, offset);
     glEnableVertexAttribArray(index);
     glVertexAttribBinding(index, buffer);
@@ -89,7 +92,8 @@ public:
       auto log = new char[lenght];
 
       glGetShaderInfoLog(shader, lenght, NULL, log);
-      std::cerr << "Shader Compilation Failed" << std::endl << log << std::endl;
+      std::println("Shader Compilation Failed");
+      std::println("{}", log);
 
       delete[] log;
       id = 0;
@@ -107,7 +111,8 @@ public:
       auto log = new char[length];
 
       glGetProgramInfoLog(program, length, NULL, log);
-      std::cerr << "Program Linking Failed" << std::endl << log << std::endl;
+      std::println("Program Linking Failed");
+      std::println("{}", log);
 
       delete[] log;
       id = 0;
@@ -136,7 +141,9 @@ public:
     glBindProgramPipeline(id);
   };
 
-  void use_stages(GLbitfield stages, GLuint program) const noexcept { glUseProgramStages(id, stages, program); }
+  void use_stages(GLbitfield stages, GLuint program) const noexcept {
+    glUseProgramStages(id, stages, program);
+  }
 
   operator GLuint() const noexcept { return id; }
   ~Pipeline() { glDeleteProgramPipelines(1, &id); };
@@ -148,4 +155,30 @@ public:
 
 private:
   GLuint id;
+};
+
+template <typename T> class UniformBuffer {
+  GLuint ubo = 0;
+  T data;
+  GLuint binding;
+
+public:
+  UniformBuffer(GLuint binding, const T &initial)
+      : data(initial), binding(binding) {
+    glGenBuffers(1, &ubo);
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(T), &data, GL_DYNAMIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, binding, ubo);
+  }
+
+  void set(const T &value) { data = value; }
+
+  void upload() const {
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(T), &data);
+  }
+
+  T get() const { return data; }
+
+  ~UniformBuffer() { glDeleteBuffers(1, &ubo); }
 };
