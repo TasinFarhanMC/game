@@ -2,7 +2,7 @@
 
 set -e
 
-DIR=$(dirname "$(dirname "$(realpath "$0")")")
+DIR=$(dirname "$(realpath "$0")")
 cd "$DIR"
 
 if [[ ! -d "$DIR/build" || "$1" ]]; then

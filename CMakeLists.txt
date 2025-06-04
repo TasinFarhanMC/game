@@ -16,15 +16,13 @@ include(FetchContent)
 option(GLM_ENABLE_CXX_20 ON)
 option(GLM_ENABLE_SIMD_SSE4_2 ON)
 
-FetchContent_Declare(glm SOURCE_DIR vendor/glm)
-FetchContent_MakeAvailable(glm)
-
-FetchContent_Declare(betr SOURCE_DIR vendor/betr)
-FetchContent_MakeAvailable(betr)
+add_subdirectory(vendor/glm)
+add_subdirectory(vendor/betr)
 
 add_library(
   imgui STATIC
   vendor/imgui/imgui.cpp
+  vendor/imgui/imgui_demo.cpp
   vendor/imgui/imgui_draw.cpp
   vendor/imgui/imgui_widgets.cpp
   vendor/imgui/imgui_tables.cpp
