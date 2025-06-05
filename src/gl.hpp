@@ -4,30 +4,66 @@
 #include <glad/gl.h>
 #include <print>
 
+namespace gl {
 template <typename T> class Buffer {
 public:
-  Buffer(GLenum type, const betr::InitList<T> data, GLenum usage = GL_STATIC_DRAW) : type(type), usage(usage) {
+  Buffer(GLenum type, const betr::InitList<T> data) : type(type) {
     glGenBuffers(1, &id);
     glBindBuffer(type, id);
-    glBufferData(type, data.size() * sizeof(T), data.begin(), usage);
+    glBufferData(type, data.size() * sizeof(T), data.begin(), GL_DYNAMIC_DRAW);
   };
-
-  void bind() const noexcept { glBindBuffer(type, id); }
-  T *map() { return static_cast<T *>(glMapBuffer(type, GL_READ_WRITE)); }
-  void unmap() { glUnmapBuffer(type); }
+  ~Buffer() { glDeleteBuffers(1, &id); }
 
   operator GLuint() const noexcept { return this->id; }
 
-  ~Buffer() { glDeleteBuffers(1, &id); }
+  T *map() {
+    glBindBuffer(type, id);
+    return static_cast<T *>(glMapBuffer(type, GL_READ_WRITE));
+  }
+  void unmap() { glUnmapBuffer(type); }
 
-  Buffer(Buffer &&) = delete;
-  Buffer(const Buffer &) = delete;
-  Buffer &operator=(Buffer &&) = delete;
-  Buffer &operator=(const Buffer &) = delete;
+  void update(const betr::InitList<T> data) {
+    glBindBuffer(type, id);
+    glBufferData(type, data.size(), data.data(), GL_DYNAMIC_DRAW);
+  }
+  void update(const betr::InitList<T> data, const GLintptr offset) {
+    glBindBuffer(type, id);
+    glBufferSubDataData(type, offset, data.size(), data.data());
+  }
+  void update(const betr::InitList<T> data, const GLintptr offset, const GLintptr size) {
+    glBindBuffer(type, id);
+    glBufferSubDataData(type, offset, size, data.data());
+  }
 
-protected:
+private:
   const GLenum type;
-  const GLenum usage;
+  GLuint id;
+};
+
+template <typename T> class Array {
+public:
+  Array(GLenum type, const betr::InitList<T> data) : type(type) {
+    glGenBuffers(1, &id);
+    glBindBuffer(type, id);
+    glBufferData(type, data.size() * sizeof(T), data.begin(), GL_STATIC_DRAW);
+  };
+  ~Array() { glDeleteBuffers(1, &id); }
+
+  operator GLuint() const noexcept { return this->id; }
+
+  T *map() {
+    glBindBuffer(type, id);
+    return static_cast<T *>(glMapBuffer(type, GL_READ_ONLY));
+  }
+  void unmap() { glUnmapBuffer(type); }
+
+  Array(Array &&) = delete;
+  Array(const Array &) = delete;
+  Array &operator=(Array &&) = delete;
+  Array &operator=(const Array &) = delete;
+
+private:
+  const GLenum type;
   GLuint id;
 };
 
@@ -114,3 +150,4 @@ public:
 
   ~UniformBuffer() { glDeleteBuffers(1, &ubo); }
 };
+}; // namespace gl

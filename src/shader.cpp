@@ -1,26 +1,24 @@
 #include "shader.hpp"
+
+#include <betr/chrono.hpp>
+#include <betr/filesystem.hpp>
 #include <betr/namespace.hpp>
-#include <betr/string.hpp>
-#include <chrono>
-#include <cstring>
-#include <filesystem>
+
 #include <fstream>
 #include <glad/gl.h>
 #include <print>
 
-namespace fs = std::filesystem;
-
 void ShaderRegistry::load_shader(const char *name) {
-  fs::path path = m_dir + "/" + name + ".glsl";
+  Path path = m_dir + "/" + name + ".glsl";
 
   if (!is_regular_file(path)) { return; }
   const auto size = file_size(path);
 
   GLint type;
 
-  if (strstr(name, ".vert")) {
+  if (String(name).find(".vert") != String::npos) {
     type = GL_VERTEX_SHADER;
-  } else if (strstr(name, ".frag")) {
+  } else if (String(name).find(".frag") != String::npos) {
     type = GL_FRAGMENT_SHADER;
   } else {
     return;
@@ -78,7 +76,7 @@ void ShaderRegistry::load_shader(const char *name) {
 }
 
 ShaderRegistry::ShaderRegistry(const String dir) : m_dir(dir) {
-  reload_time = std::chrono::file_clock::now().time_since_epoch().count();
+  reload_time = FileClock::now().time_since_epoch().count();
 }
 
 void ShaderRegistry::reload() {
@@ -94,7 +92,7 @@ void ShaderRegistry::reload() {
     load_shader(name);
   }
 
-  reload_time = std::chrono::file_clock::now().time_since_epoch().count();
+  reload_time = FileClock::now().time_since_epoch().count();
 }
 
 ShaderRegistry::~ShaderRegistry() {
