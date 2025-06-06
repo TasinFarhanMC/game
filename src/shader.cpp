@@ -8,7 +8,7 @@
 #include <glad/gl.h>
 #include <print>
 
-void ShaderRegistry::load_shader(const char *name) {
+void ShaderReg::load_shader(const char *name) {
   Path path = m_dir + "/" + name + ".glsl";
 
   if (!is_regular_file(path)) { return; }
@@ -75,11 +75,9 @@ void ShaderRegistry::load_shader(const char *name) {
   programs[name] = program;
 }
 
-ShaderRegistry::ShaderRegistry(const String dir) : m_dir(dir) {
-  reload_time = FileClock::now().time_since_epoch().count();
-}
+ShaderReg::ShaderReg(const String dir) : m_dir(dir) { reload_time = FileClock::now().time_since_epoch().count(); }
 
-void ShaderRegistry::reload() {
+void ShaderReg::reload() {
   for (auto item : programs) {
     const char *name = item.first;
     const long write_time = fs::last_write_time(m_dir + "/" + name + ".glsl").time_since_epoch().count();
@@ -95,6 +93,6 @@ void ShaderRegistry::reload() {
   reload_time = FileClock::now().time_since_epoch().count();
 }
 
-ShaderRegistry::~ShaderRegistry() {
+ShaderReg::~ShaderReg() {
   for (const auto &item : programs) { glDeleteProgram(item.second); }
 }

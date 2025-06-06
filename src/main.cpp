@@ -1,28 +1,20 @@
-
 #define GLFW_INCLUDE_NONE
 
 #include <GLFW/glfw3.h>
 #include <glad/gl.h>
 #include <print>
 
-#include "render.hpp"
+#include <key.hpp>
+#include <render.hpp>
 
 static void glfwErrorCallback(int error, const char *desc) { std::print("GLFW Error ({}): {}", error, desc); }
-
-static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-  switch (key) {
-  case GLFW_KEY_ESCAPE:
-    if (action == GLFW_PRESS) { glfwSetWindowShouldClose(window, true); }
-    break;
-  }
-}
 
 static void framebuffer(GLFWwindow *window, int width, int height) {
   float min = std::min(width / SPACE_WIDTH, height / SPACE_HEIGHT);
   float m_width = min * SPACE_WIDTH;
   float m_height = min * SPACE_HEIGHT;
 
-  glViewport(std::abs(width - m_width) / 2, std::abs(width - m_width) / 2, m_width, m_height);
+  glViewport(std::abs(width - m_width) / 2, std::abs(height - m_height) / 2, m_width, m_height);
 }
 
 int main() {
@@ -49,7 +41,7 @@ int main() {
 
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, framebuffer);
-  glfwSetKeyCallback(window, key_callback);
+  KeyReg::init(window);
 
   if (!gladLoadGL(glfwGetProcAddress)) {
     std::println("Unable to load GL");

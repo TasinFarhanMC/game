@@ -1,19 +1,22 @@
-#include "render/digits.hpp"
 #define GLFW_INCLUDE_NONE
 
-#include "render/quads.hpp"
 #include <betr/glm/vec2.hpp>
 #include <betr/glm/vec3.hpp>
 #include <betr/glm/vec4.hpp>
 #include <betr/namespace.hpp>
+
 #include <gl.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <shader.hpp>
 
-#include "render.hpp"
+#include <key.hpp>
+#include <render.hpp>
+#include <render/digits.hpp>
+#include <render/quads.hpp>
+#include <shader.hpp>
 
 float from_left(float x) { return SPACE_WIDTH - x; }
 
@@ -36,11 +39,14 @@ int render(GLFWwindow *window) {
   UniformBuffer<Vec2> sim(0, {SPACE_WIDTH, SPACE_HEIGHT});
   UniformBuffer<Vec4> visual(1, {1.0f, 1.0f, 1.0f, 1.0f});
 
-  ShaderRegistry registry("assets/shaders");
-  Quads quads({{15.0f, 35.0f, 3, 20}, {}, {0, 0, 3, 3}}, registry);
-  Digits digits({{4, 76, 6, 10, 1}, {0, 0, 6, 10, 1}}, registry);
+  ShaderReg registry("assets/shaders");
+  Quads quads({{15.0f, 35.0f, 3, 20}, {142, 35, 3, 20}, {78.5f, 43.5f, 3, 3}}, registry);
+  Digits digits({{4, 76, 6, 10, 0}, {150, 76, 6, 10, 1}}, registry);
 
   Pipeline pipeline;
+
+  Vec2 pad0_vel;
+  Vec2 pad1_vel;
 
   while (!glfwWindowShouldClose(window)) {
     static float start_t = glfwGetTime(), end_t = 0, delta_t = 0, acc_t = 0;
@@ -50,67 +56,27 @@ int render(GLFWwindow *window) {
     quads.render(pipeline);
     digits.render(pipeline);
 
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-    float spacing = ImGui::GetStyle().ItemSpacing.x;
+    auto *quad_data = quads.map();
+    auto &pad0 = quad_data[0];
+    auto &pad1 = quad_data[1];
 
-    {
-      ImGui::Begin("Editor");
-      auto *q_data = quads.map();
-      auto *d_data = digits.map();
+    pad0.pos += pad0_vel * delta_t;
+    pad1.pos += pad1_vel * delta_t;
 
-      {
-        ImGui::BeginChild("Paddle", ImVec2(), ImGuiChildFlags_AutoResizeY);
-        ImGui::Text("Paddle:");
+    if (pad0.pos.y + pad0.scale.y > SPACE_HEIGHT) { pad0.pos.y = SPACE_HEIGHT - pad0.scale.y; }
+    if (pad1.pos.y + pad1.scale.y > SPACE_HEIGHT) { pad1.pos.y = SPACE_HEIGHT - pad1.scale.y; }
 
-        ImGui::DragFloat2("Pos", glm::value_ptr(q_data[0].pos), 0.5f);
-        ImGui::DragInt2("Scale", (int *)glm::value_ptr(q_data[0].scale));
+    if (pad0.pos.y < 0) { pad0.pos.y = 0; }
+    if (pad1.pos.y < 0) { pad1.pos.y = 0; }
+    quads.unmap();
 
-        q_data[1].scale = q_data[0].scale;
-        q_data[1].pos = Vec2(from_left(q_data[0].pos.x) - q_data[0].scale.x, q_data[0].pos.y);
-
-        ImGui::EndChild();
-      }
-
-      {
-        ImGui::BeginChild("Ball", ImVec2(), ImGuiChildFlags_AutoResizeY);
-        ImGui::Text("Ball:");
-
-        unsigned &scale = q_data[2].scale.x;
-        ImGui::DragInt("Scale", (int *)&scale);
-        q_data[2].scale = UVec2(scale);
-        q_data[2].pos = Vec2((SPACE_WIDTH - scale) / 2, (SPACE_HEIGHT - scale) / 2);
-
-        ImGui::EndChild();
-      }
-
-      {
-        ImGui::BeginChild("Digit", ImVec2(), ImGuiChildFlags_AutoResizeY);
-        ImGui::Text("Digit:");
-
-        ImGui::DragFloat2("Pos", glm::value_ptr(d_data[0].pos), 0.5f);
-        ImGui::DragInt("Scale", (int *)&d_data[0].scale.x);
-        d_data[0].scale.y = d_data[0].scale.x * 5 / 3;
-
-        int id = d_data[0].id;
-        ImGui::DragInt("Id", &id);
-        d_data[0].id = id;
-
-        d_data[1].scale = d_data[0].scale;
-        d_data[1].id = d_data[0].id;
-        d_data[1].pos = Vec2(from_left(d_data[0].pos.x) - d_data[0].scale.x, d_data[0].pos.y);
-
-        ImGui::EndChild();
-      }
-
-      quads.unmap();
-      digits.unmap();
-      ImGui::End();
-    }
-
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    // ImGui_ImplOpenGL3_NewFrame();
+    // ImGui_ImplGlfw_NewFrame();
+    // ImGui::NewFrame();
+    // float spacing = ImGui::GetStyle().ItemSpacing.x;
+    //
+    // ImGui::Render();
+    // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     glfwSwapBuffers(window);
 
@@ -120,8 +86,27 @@ int render(GLFWwindow *window) {
     acc_t += delta_t;
 
     if (acc_t >= 1.0f / 30) {
-      if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) { registry.reload(); }
       glfwPollEvents();
+
+      if (KeyReg::get(GLFW_KEY_SPACE)) { registry.reload(); }
+      if (KeyReg::get(GLFW_KEY_ESCAPE)) { glfwSetWindowShouldClose(window, true); }
+
+      if (!(glfwGetKey(window, GLFW_KEY_W) ^ glfwGetKey(window, GLFW_KEY_S))) {
+        pad0_vel.y = 0.0f;
+      } else if (glfwGetKey(window, GLFW_KEY_W)) {
+        pad0_vel.y = SPACE_HEIGHT;
+      } else if (glfwGetKey(window, GLFW_KEY_S)) {
+        pad0_vel.y = -SPACE_HEIGHT;
+      }
+
+      if (!(glfwGetKey(window, GLFW_KEY_UP) ^ glfwGetKey(window, GLFW_KEY_DOWN))) {
+        pad1_vel.y = 0.0f;
+      } else if (glfwGetKey(window, GLFW_KEY_UP)) {
+        pad1_vel.y = SPACE_HEIGHT;
+      } else if (glfwGetKey(window, GLFW_KEY_DOWN)) {
+        pad1_vel.y = -SPACE_HEIGHT;
+      }
+
       acc_t -= 1.0f / 30;
     }
   }

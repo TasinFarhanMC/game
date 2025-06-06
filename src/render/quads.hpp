@@ -14,7 +14,7 @@ public:
     Vertex() {}
   };
 
-  Quads(betr::InitList<Vertex> data, ShaderRegistry &registry)
+  Quads(betr::InitList<Vertex> data, ShaderReg &registry)
       : vertex(GL_ARRAY_BUFFER, data),
         base_vertex(GL_ARRAY_BUFFER, {{1.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}}),
         registry(registry) {
@@ -37,7 +37,7 @@ private:
   gl::Array<betr::Vec2> base_vertex;
   gl::VertexArray vao;
 
-  ShaderRegistry &registry;
+  ShaderReg &registry;
   int count;
 
   void init();

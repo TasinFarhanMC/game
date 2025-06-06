@@ -2,9 +2,9 @@
 #include <betr/string.hpp>
 #include <betr/unordered_map.hpp>
 
-class ShaderRegistry {
+class ShaderReg {
 public:
-  ShaderRegistry(const betr::String dir);
+  ShaderReg(const betr::String dir);
   void reload();
 
   unsigned int operator[](const char *name) {
@@ -12,12 +12,12 @@ public:
     return programs[name];
   }
 
-  ~ShaderRegistry();
+  ~ShaderReg();
 
-  ShaderRegistry(ShaderRegistry &&) = delete;
-  ShaderRegistry(const ShaderRegistry &) = delete;
-  ShaderRegistry &operator=(ShaderRegistry &&) = delete;
-  ShaderRegistry &operator=(const ShaderRegistry &) = delete;
+  ShaderReg(ShaderReg &&) = delete;
+  ShaderReg(const ShaderReg &) = delete;
+  ShaderReg &operator=(ShaderReg &&) = delete;
+  ShaderReg &operator=(const ShaderReg &) = delete;
 
 private:
   const betr::String m_dir;
