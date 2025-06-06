@@ -5,7 +5,3 @@
 [submodule "vendor/imgui"]
 	path = vendor/imgui
 	url = https://github.com/ocornut/imgui
-
-[submodule "vendor/betr"]
-	path = vendor/betr
-	url = https://github.com/tasinfarhanmc/betr
