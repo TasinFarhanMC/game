@@ -18,5 +18,5 @@ void Quads::render(Pipeline &pipeline) {
   pipeline.use_frag(registry["color.frag"]);
 
   vao.bind();
-  glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, 1);
+  glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, count);
 }

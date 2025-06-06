@@ -20,7 +20,10 @@ public:
     glBindBuffer(type, id);
     return static_cast<T *>(glMapBuffer(type, GL_READ_WRITE));
   }
-  void unmap() { glUnmapBuffer(type); }
+  void unmap() {
+    glBindBuffer(type, id);
+    glUnmapBuffer(type);
+  }
 
   void update(const betr::InitList<T> data) {
     glBindBuffer(type, id);
@@ -55,7 +58,10 @@ public:
     glBindBuffer(type, id);
     return static_cast<T *>(glMapBuffer(type, GL_READ_ONLY));
   }
-  void unmap() { glUnmapBuffer(type); }
+  void unmap() {
+    glBindBuffer(type, id);
+    glUnmapBuffer(type);
+  }
 
   Array(Array &&) = delete;
   Array(const Array &) = delete;
@@ -142,11 +148,19 @@ public:
     glBindBufferBase(GL_UNIFORM_BUFFER, binding, ubo);
   }
 
-  void use() { glBindBuffer(GL_UNIFORM_BUFFER, ubo); }
-  void set(const T &value) { glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(T), &value); }
+  void set(const T &value) {
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(T), &value);
+  }
 
-  T *map() { return static_cast<T *>(glMapBuffer(GL_UNIFORM_BUFFER, GL_READ_WRITE)); }
-  void unmap() { glUnmapBuffer(GL_UNIFORM_BUFFER); }
+  T *map() {
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    return static_cast<T *>(glMapBuffer(GL_UNIFORM_BUFFER, GL_READ_WRITE));
+  }
+  void unmap() {
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    glUnmapBuffer(GL_UNIFORM_BUFFER);
+  }
 
   ~UniformBuffer() { glDeleteBuffers(1, &ubo); }
 };

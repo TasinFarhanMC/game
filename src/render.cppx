@@ -1,0 +1,102 @@
+    float spacing = ImGui::GetStyle().ItemSpacing.x;
+
+    {
+      ImGui::Begin("Visuals");
+      float pickerWidth = (ImGui::GetContentRegionAvail().x - spacing) * 0.5f;
+      float w = pickerWidth + spacing;
+
+      ImGui::Text("Color");
+      ImGui::SameLine(w, spacing);
+      ImGui::Text("Background Color");
+
+      Vec4 *color = visual.map();
+      ImGui::SetNextItemWidth(pickerWidth);
+      ImGui::ColorPicker4(
+          "##color", (float *)color, ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_AlphaBar
+      );
+      visual.unmap();
+
+      ImGui::SameLine();
+      ImGui::SetNextItemWidth(pickerWidth);
+      ImGui::ColorPicker3("##bg_color", (float *)&bg_color, ImGuiColorEditFlags_NoSidePreview);
+      ImGui::End();
+    }
+
+    {
+      static bool running = false;
+      ImGui::Begin("Simulation");
+      ImGui::Text("FPS: %.3f", 1.0f / delta_t);
+
+      auto *data = quads.map();
+
+      if (!running) {
+        running = ImGui::Button("Start");
+      } else {
+        running = !ImGui::Button("Stop");
+      }
+
+      ImGui::SameLine();
+      if (ImGui::Button("Reset")) {
+        data->pos = Vec2(0);
+        vel = Vec2(0);
+        data->scale = UVec2(10);
+        bounce = 1.0f;
+        running = false;
+      }
+
+      ImGui::SliderFloat2("Pos", glm::value_ptr(data->pos), 0.0f, 100.0f);
+      ImGui::SliderFloat2("vel", glm::value_ptr(vel), -500.0f, 500.0f);
+      ImGui::SliderInt2("Scale", (int *)glm::value_ptr(data->scale), 1, 100);
+      ImGui::SliderFloat("Bounce", &bounce, 0.0f, 2.0f);
+
+      if (running) {
+        data->pos += vel * delta_t;
+
+        if ((data->pos.y + data->scale.y) >= 100.0f) {
+          data->pos.y = 100.0f - bounce * (data->pos.y + data->scale.y - 100.0f) - data->scale.y;
+          vel.y *= -bounce;
+        } else if (data->pos.y <= 0.0f) {
+          data->pos.y = -bounce * data->pos.y;
+          vel.y *= -bounce;
+        }
+
+        if ((data->pos.x + data->scale.x) >= 100.0f) {
+          data->pos.x = 100.0f - bounce * (data->pos.x + data->scale.x - 100.0f) - data->scale.x;
+          vel.x *= -bounce;
+        } else if (data->pos.x <= 0.0f) {
+          data->pos.x = -bounce * data->pos.x;
+          vel.x *= -bounce;
+        }
+      }
+
+      quads.unmap();
+
+      ImGui::End();
+    }
+
+    {
+      ImGui::Begin("Digits");
+      static int scale = 1;
+
+      auto *data = digits.map();
+
+      ImGui::SameLine();
+      if (ImGui::Button("Reset")) {
+        data->pos = Vec2(0);
+        data->scale = UVec2(18, 30);
+      }
+
+      ImGui::SliderFloat2("Pos", glm::value_ptr(data->pos), 0.0f, 100.0f);
+      ImGui::SliderInt("Scale", &scale, 1, 100);
+      static int id = 0;
+      ImGui::SliderInt("ID", &id, 0, 9);
+      data->scale = UVec2(3 << scale, 5 << scale);
+      data->id = id;
+
+      digits.unmap();
+
+      ImGui::End();
+    }
+
+GUI_END:
+
