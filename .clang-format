@@ -5,7 +5,7 @@ AlignOperands: AlignAfterOperator
 AllowShortBlocksOnASingleLine: Always
 AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLoopsOnASingleLine: true
-ColumnLimit: 112
+ColumnLimit: 120
 EmptyLineBeforeAccessModifier: Always
 NamespaceIndentation: Inner
 PackConstructorInitializers: CurrentLine

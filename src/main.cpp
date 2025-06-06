@@ -1,10 +1,11 @@
 
 #define GLFW_INCLUDE_NONE
+
 #include <GLFW/glfw3.h>
 #include <glad/gl.h>
 #include <print>
 
-extern int render(GLFWwindow *window);
+#include "render.hpp"
 
 static void glfwErrorCallback(int error, const char *desc) { std::print("GLFW Error ({}): {}", error, desc); }
 
@@ -16,7 +17,13 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
   }
 }
 
-static void framebuffer(GLFWwindow *window, int width, int height) { glViewport(0, 0, width, height); }
+static void framebuffer(GLFWwindow *window, int width, int height) {
+  float min = std::min(width / SPACE_WIDTH, height / SPACE_HEIGHT);
+  float m_width = min * SPACE_WIDTH;
+  float m_height = min * SPACE_HEIGHT;
+
+  glViewport(std::abs(width - m_width) / 2, std::abs(width - m_width) / 2, m_width, m_height);
+}
 
 int main() {
   glfwSetErrorCallback(glfwErrorCallback);
@@ -29,12 +36,17 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  GLFWwindow *window = glfwCreateWindow(600, 600, "Pong", NULL, NULL);
+  const GLFWvidmode *monitor_info = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+  GLFWwindow *window = glfwCreateWindow(100, 100, "Pong", NULL, NULL);
   if (!window) {
     std::println("Failed to create GLFW window");
     glfwTerminate();
     return -1;
   }
+  glfwSetWindowSize(window, monitor_info->width * 2 / 3, monitor_info->height * 2 / 3);
+  glfwSetWindowPos(window, monitor_info->width / 6, monitor_info->height / 6);
+
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, framebuffer);
   glfwSetKeyCallback(window, key_callback);

@@ -12,6 +12,7 @@ public:
     unsigned char id;
 
     Vertex(float x, float y, unsigned w, unsigned h, unsigned char id) : pos(x, y), scale(w, h), id(id) {}
+    Vertex() {}
   };
 
   Digits(betr::InitList<Vertex> data, ShaderRegistry &registry)

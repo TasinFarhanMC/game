@@ -11,6 +11,7 @@ public:
     betr::UVec2 scale;
 
     Vertex(float x, float y, unsigned w, unsigned h) : pos(x, y), scale(w, h) {}
+    Vertex() {}
   };
 
   Quads(betr::InitList<Vertex> data, ShaderRegistry &registry)
