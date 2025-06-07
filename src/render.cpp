@@ -39,8 +39,7 @@ void ball_pad_collision(Collider &ball, Collider &pad, float delta_t, float &pad
           0.5 * pad_bon +
       1;
 
-  ball.pos.x = pad.pos.x + e * (ball.pos.x - pad.pos.x);
-  ball.vel.x *= -e;
+  ball.bounce_x(pad.left(), e);
 }
 
 Vec2 ball_vel() {
@@ -102,6 +101,12 @@ int render(GLFWwindow *window) {
   Collider pad1(quad_data[1]);
   Collider ball(quad_data[2], ball_vel());
 
+  auto reset_colliders = [&]() {
+    ball.vel = ball_vel();
+    ball.pos = Vec2(78.5f, 43.5f);
+    run = false;
+  };
+
   while (!glfwWindowShouldClose(window)) {
     static float start_t = glfwGetTime(), end_t = 0, delta_t = 0, acc_t = 0;
 
@@ -143,44 +148,26 @@ int render(GLFWwindow *window) {
         ball.vel.y *= -(1 + wall_bon);
       }
 
-      // if ((ball.pos.x + ball.scale.x) >= SPACE_WIDTH) {
-      //   ball.pos.x = SPACE_WIDTH - (1 + wall_bon) * (ball.pos.x + ball.scale.x - SPACE_WIDTH) - ball.scale.x;
-      //   ball.vel.x *= -(1 + wall_bon);
-      // } else if (ball.pos.x <= 0.0f) {
-      //   ball.pos.x = -(1 + wall_bon) * ball.pos.x;
-      //   ball.vel.x *= -(1 + wall_bon);
-      // }
-
       if ((ball.pos.x + ball.scale.x) >= SPACE_WIDTH) {
         digit_data[0].id++;
-        ball.vel = ball_vel();
-        ball.pos = Vec2(78.5f, 43.5f);
-        run = false;
+        reset_colliders();
       } else if (ball.pos.x <= 0.0f) {
         digit_data[1].id++;
-        ball.vel = ball_vel();
-        ball.pos = Vec2(78.5f, 43.5f);
-        run = false;
+        reset_colliders();
       }
-
-      // run = false;
     }
 
     if (digit_data[0].id > 9) {
-      ball.vel = ball_vel();
-      ball.pos = Vec2(78.5f, 43.5f);
       digit_data[0].id = 0;
       digit_data[1].id = 0;
-      run = false;
+      reset_colliders();
       std::println("Player 0 Won");
     }
 
     if (digit_data[1].id > 9) {
-      ball.vel = ball_vel();
-      ball.pos = Vec2(78.5f, 43.5f);
       digit_data[0].id = 0;
       digit_data[1].id = 0;
-      run = false;
+      reset_colliders();
       std::println("Player 1 Won");
     }
 
