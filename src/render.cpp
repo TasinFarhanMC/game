@@ -28,6 +28,71 @@ using namespace gl;
 constexpr float PADDLE_D = 0.010f;
 constexpr float WALL_E = 1.005f;
 
+constexpr float BOOST_TIME = 0.1f;
+constexpr float RECOIL_TIME = 0.3f;
+constexpr float BOOST_DISTANCE = 7.0f;
+
+struct Boost {
+  Collider pad;
+  float timer = 0.0f;
+  float x = 0.0f;
+  enum State { Idle, Boosting, Recoiling } state = Idle;
+
+  void update(float delta_t) {
+    if (state == Idle) return;
+
+    timer += delta_t;
+
+    if (state == Boosting) {
+      float t = std::min(timer / BOOST_TIME, 1.0f);
+      pad.pos.x = x + BOOST_DISTANCE * t;
+
+      if (t >= 1.0f) {
+        state = Recoiling;
+        timer = 0.0f;
+      }
+
+    } else if (state == Recoiling) {
+      float t = std::min(timer / RECOIL_TIME, 1.0f);
+      pad.pos.x = x + BOOST_DISTANCE * (1.0f - t);
+
+      if (t >= 1.0f) {
+        pad.pos.x = x;
+        state = Idle;
+      }
+    }
+  }
+};
+
+void update_boost(Collider &pad, float delta_t) {
+  static enum State { Idle, Boosting, Recoiling } state = Idle;
+  static float timer = 0.0f;
+  static float pos = pad.pos.x;
+
+  if (state == Idle) return;
+
+  timer += delta_t;
+
+  if (state == Boosting) {
+    float t = std::min(timer / BOOST_TIME, 1.0f);
+    pad.pos.x = pos + BOOST_DISTANCE * t;
+
+    if (t >= 1.0f) {
+      state = Recoiling;
+      timer = 0.0f;
+    }
+
+  } else if (state == Recoiling) {
+    float t = std::min(timer / RECOIL_TIME, 1.0f);
+    pad.pos.x = pos + BOOST_DISTANCE * (1.0f - t);
+
+    if (t >= 1.0f) {
+      pad.pos.x = pos;
+      state = Idle;
+    }
+  }
+}
+
 struct Paddle {
   Collider collider;
 
@@ -171,7 +236,9 @@ int render(GLFWwindow *window) {
 
     update_pad(pad0, delta_t);
     update_pad(pad1, delta_t);
-    pad0_anim.update(delta_t);
+
+    update_boost(pad1, delta_t);
+    // pad0_anim.update(delta_t);
 
     if (!paused) {
       if (ball.colliding(pad0, delta_t)) {
