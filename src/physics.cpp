@@ -3,7 +3,6 @@
 #include <cmath>
 
 bool Collider::colliding(Collider &b, float delta_t) {
-  // Calculate expanded static box (b)
   Vec2 b_min = b.pos;
   Vec2 b_max = b.pos + Vec2(b.scale);
 
@@ -33,14 +32,4 @@ bool Collider::colliding(Collider &b, float delta_t) {
   float exit_time = std::min(inv_exit.x, inv_exit.y);
 
   return (entry_time <= exit_time) && (entry_time >= 0.0f) && (entry_time <= 1.0f);
-}
-
-void Collider::bounce_x(float wall, float e) {
-  pos.x = wall + e * (pos.x - wall);
-  vel.x *= -e;
-}
-
-void Collider::bounce_y(float wall, float e) {
-  pos.y = wall + e * (pos.y - wall);
-  vel.y *= -e;
 }

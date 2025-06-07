@@ -21,7 +21,4 @@ struct Collider {
   void left(float x) const { pos.x = x; }
   void top(float y) const { pos.y = y - scale.y; }
   void right(float x) const { pos.x = x - scale.x; }
-
-  void bounce_x(float wall, float e);
-  void bounce_y(float wall, float e);
 };
