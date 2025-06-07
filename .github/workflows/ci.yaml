@@ -54,13 +54,14 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
         echo "bin-dir=${{ github.workspace }}/bin" >> "$GITHUB_OUTPUT"
 
-    - name: Install Dependencies
-      if: ${{ matrix.os == 'ubuntu' }}
+    - name: Install Dependencies Linux
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       uses: awalsh128/cache-apt-pkgs-action@latest
       with:
         packages: libwayland-dev libxkbcommon-dev xorg-dev xvfb
-
-    - if: matrix.os == 'windows'
+    
+    - name: Install Dependencies on Windows
+      if: ${{ matrix.os == 'windows-latest' }}
       uses: ssciwr/setup-mesa-dist-win@v2
 
     - name: Configure CMake
