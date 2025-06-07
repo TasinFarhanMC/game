@@ -73,11 +73,19 @@ jobs:
       shell: pwsh
       run: |
         New-Item -ItemType Directory -Force -Path "${{ steps.strings.outputs['bin-dir'] }}\assets"
-        Copy-Item -Path "${{ github.workspace }}\assets\*" -Destination "${{ steps.strings.outputs['bin-dir'] }}\assets" -Recurse -Force
+        Copy-Item -Path "${{ github.workspace }}\assets\*" -Destination "${{ steps.strings.outputs['bin-dir'] }}\Release\assets" -Recurse -Force
       if: runner.os == 'Windows'
 
-    - name: Upload build artifacts
+    - name: Upload Artifacts Unix
       uses: actions/upload-artifact@v4
       with:
         name: binaries-${{ matrix.os }}-${{ matrix.c_compiler }}
         path: ${{ steps.strings.outputs['bin-dir'] }}
+      if: runner.os != 'Windows'
+
+    - name: Upload Artifacts Windows
+      uses: actions/upload-artifact@v4
+      with:
+        name: binaries-${{ matrix.os }}-${{ matrix.c_compiler }}
+        path: ${{ steps.strings.outputs['bin-dir'] }}\Release
+      if: runner.os == 'Windows'
