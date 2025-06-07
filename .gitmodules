@@ -8,3 +8,6 @@
 [submodule "vendor/betr"]
 	path = vendor/betr
 	url = https://github.com/tasinfarhanmc/betr
+[submodule "vendor/glfw"]
+	path = vendor/glfw
+	url = https://github.com/glfw/glfw

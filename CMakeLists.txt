@@ -9,7 +9,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(OpenGL REQUIRED)
-find_package(glfw3 REQUIRED)
 
 include(FetchContent)
 
@@ -18,6 +17,7 @@ option(GLM_ENABLE_SIMD_SSE4_2 ON)
 
 add_subdirectory(vendor/glm)
 add_subdirectory(vendor/betr)
+add_subdirectory(vendor/glfw)
 
 add_library(
   imgui STATIC
