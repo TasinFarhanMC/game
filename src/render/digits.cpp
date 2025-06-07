@@ -1,6 +1,7 @@
 #include "digits.hpp"
 #include "gl.hpp"
 #include <betr/namespace.hpp>
+#include <print>
 #include <stb_image.h>
 
 using namespace gl;
@@ -17,7 +18,8 @@ void Digits::init() {
 
   stbi_set_flip_vertically_on_load(true);
   int width, height, nrChannels;
-  unsigned char *data = stbi_load("assets/fonts/bitmap.bmp", &width, &height, &nrChannels, 0);
+  unsigned char *data = stbi_load("assets/fonts/bitmap.png", &width, &height, &nrChannels, 0);
+  std::println("Channels {}", nrChannels);
 
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
@@ -27,7 +29,7 @@ void Digits::init() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-  GLenum format = GL_RGBA;
+  GLenum format = GL_RED;
 
   glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
