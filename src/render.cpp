@@ -1,3 +1,4 @@
+#include <numbers>
 #define GLFW_INCLUDE_NONE
 
 #include <betr/glm/vec2.hpp>
@@ -42,6 +43,32 @@ void ball_pad_collision(Collider &ball, Collider &pad, float delta_t, float &pad
   ball.vel.x *= -e;
 }
 
+Vec2 ball_vel() {
+  float r = 100.0f;
+  static std::mt19937 gen(std::random_device {}());
+  constexpr float deg_to_rad = std::numbers::pi_v<float> / 180.0f;
+
+  // 50% chance to go left or right
+  std::uniform_int_distribution<int> direction_dist(0, 1);
+  bool right_side = direction_dist(gen);
+
+  // Angle range: -60 to +60 degrees
+  std::uniform_real_distribution<float> angle_dist(-60.0f * deg_to_rad, 60.0f * deg_to_rad);
+  float angle = angle_dist(gen);
+
+  // Flip across the y-axis if going left
+  if (!right_side) { angle = std::numbers::pi_v<float> - angle; }
+
+  // 50% chance to flip the y component (vertical direction)
+  std::uniform_int_distribution<int> flip_y_dist(0, 1);
+  bool flip_y = flip_y_dist(gen);
+
+  float x = std::cos(angle);
+  float y = std::sin(angle) * (flip_y ? -1.0f : 1.0f);
+
+  return Vec2(x, y) * r;
+}
+
 int render(GLFWwindow *window) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -73,7 +100,7 @@ int render(GLFWwindow *window) {
 
   Collider pad0(quad_data[0]);
   Collider pad1(quad_data[1]);
-  Collider ball(quad_data[2], {69, 50});
+  Collider ball(quad_data[2], ball_vel());
 
   while (!glfwWindowShouldClose(window)) {
     static float start_t = glfwGetTime(), end_t = 0, delta_t = 0, acc_t = 0;
@@ -126,12 +153,12 @@ int render(GLFWwindow *window) {
 
       if ((ball.pos.x + ball.scale.x) >= SPACE_WIDTH) {
         digit_data[0].id++;
-        ball.vel = Vec2(69, 50);
+        ball.vel = ball_vel();
         ball.pos = Vec2(78.5f, 43.5f);
         run = false;
       } else if (ball.pos.x <= 0.0f) {
         digit_data[1].id++;
-        ball.vel = Vec2(69, 50);
+        ball.vel = ball_vel();
         ball.pos = Vec2(78.5f, 43.5f);
         run = false;
       }
@@ -140,7 +167,7 @@ int render(GLFWwindow *window) {
     }
 
     if (digit_data[0].id > 9) {
-      ball.vel = Vec2(69, 50);
+      ball.vel = ball_vel();
       ball.pos = Vec2(78.5f, 43.5f);
       digit_data[0].id = 0;
       digit_data[1].id = 0;
@@ -149,7 +176,7 @@ int render(GLFWwindow *window) {
     }
 
     if (digit_data[1].id > 9) {
-      ball.vel = Vec2(69, 50);
+      ball.vel = ball_vel();
       ball.pos = Vec2(78.5f, 43.5f);
       digit_data[0].id = 0;
       digit_data[1].id = 0;
@@ -176,7 +203,7 @@ int render(GLFWwindow *window) {
       if (KeyReg::get(GLFW_KEY_SPACE)) { registry.reload(); }
       if (KeyReg::get(GLFW_KEY_ESCAPE)) { glfwSetWindowShouldClose(window, true); }
       if (KeyReg::get(GLFW_KEY_BACKSPACE)) {
-        ball.vel = Vec2(69, 50);
+        ball.vel = ball_vel();
         ball.pos = Vec2(78.5f, 43.5f);
         run = false;
       }
