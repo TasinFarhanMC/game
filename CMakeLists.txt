@@ -12,28 +12,30 @@ find_package(OpenGL REQUIRED)
 
 include(FetchContent)
 
-option(GLM_ENABLE_CXX_20 ON)
+option(GLM_ENABLE_CXX_23 ON)
 option(GLM_ENABLE_SIMD_SSE4_2 ON)
 
-add_subdirectory(vendor/glm)
-add_subdirectory(vendor/betr)
-add_subdirectory(vendor/glfw)
+add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/glm)
+add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/betr)
+add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/glfw)
 
 add_library(
   imgui STATIC
-  vendor/imgui/imgui.cpp
-  vendor/imgui/imgui_demo.cpp
-  vendor/imgui/imgui_draw.cpp
-  vendor/imgui/imgui_widgets.cpp
-  vendor/imgui/imgui_tables.cpp
-  vendor/imgui/backends/imgui_impl_glfw.cpp
-  vendor/imgui/backends/imgui_impl_opengl3.cpp)
+  ${CMAKE_SOURCE_DIR}/vendor/imgui/imgui.cpp
+  ${CMAKE_SOURCE_DIR}/vendor/imgui/imgui_demo.cpp
+  ${CMAKE_SOURCE_DIR}/vendor/imgui/imgui_draw.cpp
+  ${CMAKE_SOURCE_DIR}/vendor/imgui/imgui_widgets.cpp
+  ${CMAKE_SOURCE_DIR}/vendor/imgui/imgui_tables.cpp
+  ${CMAKE_SOURCE_DIR}/vendor/imgui/backends/imgui_impl_glfw.cpp
+  ${CMAKE_SOURCE_DIR}/vendor/imgui/backends/imgui_impl_opengl3.cpp)
 
-target_include_directories(imgui PUBLIC vendor/imgui vendor/imgui/backends)
+target_include_directories(
+  imgui PUBLIC ${CMAKE_SOURCE_DIR}/vendor/imgui
+               ${CMAKE_SOURCE_DIR}/vendor/imgui/backends)
 
 target_link_libraries(imgui PUBLIC glfw)
 
-set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(INCLUDE_DIRS "${SRC_DIR}")
 
 file(GLOB_RECURSE SRC_FILES "${SRC_DIR}/*.c" "${SRC_DIR}/*.cpp")
