@@ -16,8 +16,6 @@ jobs:
         include:
           - os: ubuntu
             compiler: ''
-          - os: macos
-            compiler: ''
 
     steps:
       - name: Checkout repository
