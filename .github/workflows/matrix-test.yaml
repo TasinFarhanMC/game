@@ -52,12 +52,6 @@ jobs:
         if: matrix.os == 'ubuntu'
         run: "Xvfb :99 -screen 0 1920x1080x24 &"
 
-      - name: Fix GLFW Bug
-        if: matrix.os == 'macos'
-        run: |
-         sed -i '' 's/[[:space:]]*ADD_ATTRIB(NSOpenGLPFAAccelerated);[[:space:]]*/ADD_ATTRIB(NSOpenGLPFARendererID);ADD_ATTRIB(kCGLRendererGenericFloatID);/' \
-         "${{github.workspace}}/vendor/glfw/src/nsgl_context.m"
-
       - name: Setup MinGW
         id: setup_mingw
         if: matrix.compiler == 'mingw'
