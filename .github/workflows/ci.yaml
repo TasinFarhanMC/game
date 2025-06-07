@@ -20,10 +20,6 @@ jobs:
             cpp_compiler: cl
             build_type: Release
           - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-            build_type: Release
-          - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
             build_type: Release
@@ -72,7 +68,7 @@ jobs:
     - name: Copy Assets Windows
       shell: pwsh
       run: |
-        New-Item -ItemType Directory -Force -Path "${{ steps.strings.outputs['bin-dir'] }}\assets"
+        New-Item -ItemType Directory -Force -Path "${{ steps.strings.outputs['bin-dir'] }}\Release\assets"
         Copy-Item -Path "${{ github.workspace }}\assets\*" -Destination "${{ steps.strings.outputs['bin-dir'] }}\Release\assets" -Recurse -Force
       if: runner.os == 'Windows'
 
