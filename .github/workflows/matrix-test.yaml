@@ -11,8 +11,6 @@ jobs:
     runs-on: "${{ matrix.os }}-latest"
     strategy:
       matrix:
-        os: [ windows ]
-        compiler: [ msvc, mingw, clang ]
         include:
           - os: ubuntu
             compiler: ''
@@ -64,6 +62,11 @@ jobs:
         uses: egor-tensin/setup-clang@v1
         with:
           cc: 0
+
+      - name: Show compiler version
+        run: |
+          echo "C++ compiler version:"
+          ${CXX:-g++} --version || true
 
       - name: Configure CMake
         if: matrix.compiler == 'msvc'
