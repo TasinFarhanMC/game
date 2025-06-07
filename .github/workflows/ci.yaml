@@ -67,9 +67,9 @@ jobs:
       with:
         packages: libwayland-dev libxkbcommon-dev xorg-dev xvfb
     
-    - name: Dependencies Windows
-      if: ${{ matrix.os == 'windows-latest' }}
-      uses: ssciwr/setup-mesa-dist-win@v2
+    # - name: Dependencies Windows
+    #   if: ${{ matrix.os == 'windows-latest' }}
+    #   uses: ssciwr/setup-mesa-dist-win@v2
 
     - name: Configure CMake
       run: >
