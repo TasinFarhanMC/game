@@ -69,11 +69,11 @@ jobs:
 
       - name: Configure CMake
         if: matrix.compiler == 'msvc'
-        run: cmake --preset=test
+        run: cmake --preset=debug
       - if: matrix.os != 'windows' || matrix.compiler == 'mingw'
-        run: cmake --preset=test -G Ninja
+        run: cmake --preset=debug -G Ninja
       - if: matrix.compiler == 'clang'
-        run: cmake --preset=test -G Ninja -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++
+        run: cmake --preset=debug -G Ninja -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++
 
       - name: Build
         if: matrix.os == 'windows'
