@@ -1,5 +1,5 @@
 #pragma once
-#include <render/quads.hpp>
+#include <render/quad.hpp>
 
 struct Collider {
   Quads::Vertex &vertex;

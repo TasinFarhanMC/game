@@ -12,7 +12,6 @@ jobs:
 
     strategy:
       fail-fast: false
-
       matrix:
         include:
           - os: windows-latest
@@ -20,6 +19,10 @@ jobs:
             cpp_compiler: cl
             build_type: Release
           - os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+            build_type: Release
+          - os: macos-latest
             c_compiler: clang
             cpp_compiler: clang++
             build_type: Release
@@ -48,6 +51,7 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCMAKE_CXX_STANDARD=23
         -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${{ steps.strings.outputs['bin-dir'] }}
         -S ${{ github.workspace }}
 

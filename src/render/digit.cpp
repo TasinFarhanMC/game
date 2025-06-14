@@ -1,4 +1,4 @@
-#include "digits.hpp"
+#include "digit.hpp"
 #include "gl.hpp"
 #include <betr/namespace.hpp>
 #include <print>

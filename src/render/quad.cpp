@@ -1,4 +1,4 @@
-#include "quads.hpp"
+#include "quad.hpp"
 #include <betr/namespace.hpp>
 
 using namespace gl;
