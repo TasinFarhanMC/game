@@ -2,8 +2,7 @@ name: Create Release
 
 on:
   push:
-    tags:
-      - "v*"  # Adjust pattern as needed (e.g. v1.0, v2.3.1, etc.)
+    branches: [ release ]
 
 jobs:
   build:
