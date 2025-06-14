@@ -4,6 +4,7 @@
 #include <betr/glm/vec3.hpp>
 #include <betr/glm/vec4.hpp>
 #include <betr/namespace.hpp>
+#include <numbers>
 
 #include <gl.hpp>
 #include <glm/gtc/type_ptr.hpp>

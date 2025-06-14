@@ -1,2 +1,2 @@
 **VERSION**
-0.0.1 (ALPHA 1)
+v0.0.1-alpha.1
