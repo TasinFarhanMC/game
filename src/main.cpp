@@ -255,9 +255,9 @@ int render(GLFWwindow *window) {
   UniformBuffer<Vec2> sim(0, {SPACE_WIDTH, SPACE_HEIGHT});
   UniformBuffer<Vec4> visual(1, {1.0f, 1.0f, 1.0f, 1.0f});
 
-  ShaderReg registry("assets/shaders");
-  Quads quads({{15.0f, 35.0f, 3, 20}, {142, 35, 3, 20}, {78.5f, 43.5f, 3, 3}}, registry);
-  Digits digits({{4, 76, 6, 10, 0}, {150, 76, 6, 10, 0}}, registry);
+  Shader::load("assets/shaders");
+  Quads quads({{15.0f, 35.0f, 3, 20}, {142, 35, 3, 20}, {78.5f, 43.5f, 3, 3}});
+  Digits digits({{4, 76, 6, 10, 0}, {150, 76, 6, 10, 0}});
 
   Pipeline pipeline;
   float paused = true;
@@ -370,7 +370,7 @@ int render(GLFWwindow *window) {
     if (acc_t >= 1.0f / 30) {
       glfwPollEvents();
 
-      if (KeyReg::get(GLFW_KEY_R)) { registry.reload(); }
+      if (KeyReg::get(GLFW_KEY_R)) { Shader::reload(); }
       if (KeyReg::get(GLFW_KEY_ESCAPE)) { glfwSetWindowShouldClose(window, true); }
       if (KeyReg::get(GLFW_KEY_BACKSPACE)) {
         ball.vel = get_ball_vel();
@@ -409,6 +409,7 @@ int render(GLFWwindow *window) {
 
   quads.unmap();
   digits.unmap();
+  Shader::unload();
 
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();

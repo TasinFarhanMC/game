@@ -2,6 +2,7 @@
 #include "gl.hpp"
 #include <betr/namespace.hpp>
 #include <print>
+#include <shader.hpp>
 #include <stb_image.h>
 
 using namespace gl;
@@ -19,7 +20,6 @@ void Digits::init() {
   stbi_set_flip_vertically_on_load(true);
   int width, height, nrChannels;
   unsigned char *data = stbi_load("assets/fonts/bitmap.png", &width, &height, &nrChannels, 0);
-  std::println("Channels {}", nrChannels);
 
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
@@ -37,9 +37,9 @@ void Digits::init() {
 }
 
 void Digits::render(Pipeline &pipeline) {
-  GLuint frag = registry["font.frag"];
+  GLuint frag = Shader::get("font.frag");
 
-  pipeline.use_vert(registry["font.vert"]);
+  pipeline.use_vert(Shader::get("font.vert"));
   pipeline.use_frag(frag);
 
   glActiveTexture(GL_TEXTURE0);

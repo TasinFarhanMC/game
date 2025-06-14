@@ -1,5 +1,4 @@
 #pragma once
-#include "shader.hpp"
 #include <betr/glm/ext/vec_float2.hpp>
 #include <betr/glm/ext/vec_uint2.hpp>
 #include <gl.hpp>
@@ -14,10 +13,9 @@ public:
     Vertex() {}
   };
 
-  Quads(betr::InitList<Vertex> data, ShaderReg &registry)
+  Quads(betr::InitList<Vertex> data)
       : vertex(GL_ARRAY_BUFFER, data),
-        base_vertex(GL_ARRAY_BUFFER, {{1.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}}),
-        registry(registry) {
+        base_vertex(GL_ARRAY_BUFFER, {{1.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f}, {1.0f, 0.0f}}) {
     count = data.size();
     init();
   };
@@ -37,7 +35,6 @@ private:
   gl::Array<betr::Vec2> base_vertex;
   gl::VertexArray vao;
 
-  ShaderReg &registry;
   int count;
 
   void init();

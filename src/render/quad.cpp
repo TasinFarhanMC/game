@@ -1,5 +1,6 @@
 #include "quad.hpp"
 #include <betr/namespace.hpp>
+#include <shader.hpp>
 
 using namespace gl;
 
@@ -14,8 +15,8 @@ void Quads::init() {
 }
 
 void Quads::render(Pipeline &pipeline) {
-  pipeline.use_vert(registry["quad.vert"]);
-  pipeline.use_frag(registry["color.frag"]);
+  pipeline.use_vert(Shader::get("quad.vert"));
+  pipeline.use_frag(Shader::get("color.frag"));
 
   vao.bind();
   glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, count);

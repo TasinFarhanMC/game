@@ -3,15 +3,30 @@
 #include <betr/chrono.hpp>
 #include <betr/filesystem.hpp>
 #include <betr/namespace.hpp>
+#include <betr/string.hpp>
+#include <betr/unordered_map.hpp>
 
 #include <fstream>
-#include <glad/gl.h>
 #include <print>
 
-void ShaderReg::load_shader(const char *name) {
-  Path path = m_dir + "/" + name + ".glsl";
+#include <glad/gl.h>
 
-  if (!is_regular_file(path)) { return; }
+static UnorderedMap<const char *, unsigned int> map;
+static long reload_time;
+static String dir;
+
+namespace Shader {
+void load(const char *dir) {
+  ::dir = dir;
+  reload_time = FileClock::now().time_since_epoch().count();
+}
+
+unsigned add_shader(const char *name) {
+  static String shader_src;
+
+  Path path = dir + "/" + name + ".glsl";
+
+  if (!is_regular_file(path)) { return 0; }
   const auto size = file_size(path);
 
   GLint type;
@@ -21,7 +36,7 @@ void ShaderReg::load_shader(const char *name) {
   } else if (String(name).find(".frag") != String::npos) {
     type = GL_FRAGMENT_SHADER;
   } else {
-    return;
+    return 0;
   }
 
   std::ifstream in(path);
@@ -47,7 +62,7 @@ void ShaderReg::load_shader(const char *name) {
 
     delete[] log;
     glDeleteShader(shader);
-    return;
+    return 0;
   }
 
   GLuint program = glCreateProgram();
@@ -68,31 +83,34 @@ void ShaderReg::load_shader(const char *name) {
     delete[] log;
     glDeleteShader(shader);
     glDeleteProgram(program);
-    return;
+    return 0;
   }
   glDeleteShader(shader);
 
-  programs[name] = program;
+  map[name] = program;
+  return program;
 }
 
-ShaderReg::ShaderReg(const String dir) : m_dir(dir) { reload_time = FileClock::now().time_since_epoch().count(); }
+unsigned get(const char *name) {
+  if (!map.contains(name)) { return add_shader(name); }
+  return map[name];
+}
 
-void ShaderReg::reload() {
-  for (auto item : programs) {
-    const char *name = item.first;
-    const long write_time = fs::last_write_time(m_dir + "/" + name + ".glsl").time_since_epoch().count();
-
+void reload() {
+  for (auto [name, id] : map) {
+    const long write_time = fs::last_write_time(dir + "/" + name + ".glsl").time_since_epoch().count();
     if (write_time <= reload_time) { continue; }
 
     std::println("Reloading: {}", name);
-    glDeleteProgram(programs[name]);
+    glDeleteProgram(id);
 
-    load_shader(name);
+    add_shader(name);
   }
 
   reload_time = FileClock::now().time_since_epoch().count();
 }
 
-ShaderReg::~ShaderReg() {
-  for (const auto &item : programs) { glDeleteProgram(item.second); }
+void unload() {
+  for (const auto [_, shader] : map) { glDeleteProgram(shader); }
 }
+} // namespace Shader
