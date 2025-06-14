@@ -274,7 +274,9 @@ int render(GLFWwindow *window) {
 
   auto reset_colliders = [&]() {
     ball.vel = get_ball_vel();
-    ball.pos = Vec2(78.5f, 43.5f);
+    ball.pos = {78.5f, 43.5f};
+    quad_data[0].pos = {15.0f, 35.0f};
+    quad_data[1].pos = {142.0f, 35.0f};
     paused = true;
   };
 
@@ -394,7 +396,14 @@ int render(GLFWwindow *window) {
         pad1.vel.y = -SPACE_HEIGHT;
       }
 
-      if (KeyReg::get(GLFW_KEY_P)) { paused = !paused; }
+      if (KeyReg::get(GLFW_KEY_Q)) {
+        reset_colliders();
+        digit_data[0].id = 0;
+        digit_data[1].id = 0;
+        paused = true;
+      }
+
+      if (KeyReg::get(GLFW_KEY_ENTER)) { paused = !paused; }
       if (KeyReg::get(GLFW_KEY_RIGHT_SHIFT) && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
         paused = false;
       } else if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
