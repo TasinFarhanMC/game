@@ -304,14 +304,14 @@ int render(GLFWwindow *window) {
       if (ball.colliding(pad0, delta_t)) {
         ball.pos += ball.vel * delta_t;
 
-        float e = calc_pad_e(ball, pad0);
+        float e = calc_pad_e(pad0, ball);
 
         ball.pos.x = pad0.left() + e * (ball.pos.x - pad0.left());
         ball.vel.x *= -e;
       } else if (ball.colliding(pad1, delta_t)) {
         ball.pos += ball.vel * delta_t;
 
-        float e = calc_pad_e(ball, pad1);
+        float e = calc_pad_e(pad0, ball);
 
         ball.pos.x = pad1.right() + e * (ball.pos.x - pad1.right());
         ball.vel.x *= -e;
