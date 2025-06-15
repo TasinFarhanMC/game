@@ -64,9 +64,8 @@ cmake --build build --config Release
 | ------- | ----------------- |
 | `W / S` | Move left paddle  |
 | `↑ / ↓` | Move right paddle |
-| `P`     | Pause / Unpause   |
+| `ENTER` | Pause / Unpause   |
 | `R`     | Reload Shaders    |
-| `Enter` | Start             |
 | `ESC`   | Exit              |
 
 ---
